@@ -6,11 +6,11 @@ require 'xcode_summary/gem_version.rb'
 Gem::Specification.new do |spec|
   spec.name          = 'danger-xcode_summary'
   spec.version       = XcodeSummary::VERSION
-  spec.authors       = ['Diogo Tridapalli']
-  spec.email         = ['me@diogot.com']
+  spec.authors       = ['Diogo Tridapalli', 'Marcelo Fabri']
+  spec.email         = ['me@diogot.com', 'me@marcelofabri.com']
   spec.description   = %q{A short description of danger-xcode_summary.}
   spec.summary       = %q{A longer description of danger-xcode_summary.}
-  spec.homepage      = 'https://github.com/Diogo Tridapalli/danger-xcode_summary'
+  spec.homepage      = 'https://github.com/diogot/danger-xcode_summary'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
