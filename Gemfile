@@ -5,3 +5,4 @@ gemspec
 
 gem 'danger'
 gem 'yard'
+gem 'rubocop'
