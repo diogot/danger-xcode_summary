@@ -1,5 +1,3 @@
-require 'json'
-  
 module Danger
   # This is your plugin class. Any attributes or methods you expose here will
   # be available from within your Dangerfile.
@@ -20,39 +18,29 @@ module Danger
   #
   class DangerXcodeSummary < Plugin
 
-    # An attribute that you can read/write from your Dangerfile
-    #
-    # @return   [Array<String>]
-    # attr_accessor :my_attribute
-
-    # A method that you can call from your Dangerfile
-    # @return   [Array<String>]
-    #
-    # def warn_on_mondays
-    #   warn 'Trying to merge code on a Monday' if Date.today.wday == 1
-    # end
-    
+    require 'json'
+  
     # Reads file with JSON Xcode summary
     #
-    # @param String path for Xcode summary
+    # @param file_path String path for Xcode summary
     #
     # @return JSON object
     #
-    def read_xcode_summary(file_path)
-      if File.file?(build_file)
-        json = JSON.parse(File.read(buildlog_path), {:symbolize_names => true})
+    def read_summary(file_path)
+      if File.file?(file_path)
+        JSON.parse(File.read(file_path), {:symbolize_names => true})
       else
-        fail("xcodebuild log not found")
+        fail 'summary file not found'
       end
     end
     
     # Receive a JSON object with symbols as keys
     #
-    # @param JSON object
+    # @param xcode_summary JSON object
     #
     # @return [void]
     #
-    def xcode_summary(xcode_summary)
+    def format_summary(xcode_summary)
       messages = [
         xcode_summary[:tests_summary_messages]
       ].flatten.uniq.compact
@@ -77,9 +65,9 @@ module Danger
     end
     
     private
-    
+
     def url_for_path(path)
-      commit = head_commit
+      commit = github.head_commit
       repo = env.request_source.pr_json[:head][:repo][:html_url]
       path = "/#{path}" unless path.start_with? '/'
       path, line = path.split(':')
