@@ -83,6 +83,12 @@ module Danger
       end
 
       it 'format summary' do
+
+        github = @dangerfile.github
+        allow(github).to receive(:head_commit) { '129jef029jf029fj2039fj203f92' }
+        request_source = @dangerfile.env.request_source
+        allow(request_source).to receive(:pr_json) { { :head => { :repo => { :html_url => 'https://github.com/diogot/danger-xcode_summary' } } } }
+        
         @xcode_summary.format_summary(@summary)
       end
 
