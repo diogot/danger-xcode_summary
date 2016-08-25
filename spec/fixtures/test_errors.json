@@ -1,0 +1,11 @@
+{
+  "tests_failures": {
+    "MyWeight.MyWeightSpec": [
+      {
+        "file_path": "/Users/diogo/src/MyWeight/MyWeight/MyWeightTests/Tests.swift:86",
+        "reason": "expected to eventually not be nil, got <nil>",
+        "test_case": "works_with_success"
+      }
+    ]
+  }
+}
