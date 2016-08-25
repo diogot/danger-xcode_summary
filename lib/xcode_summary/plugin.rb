@@ -90,7 +90,7 @@ module Danger
     end
 
     def escape_reason(reason)
-      reason.tr('>', "\>").tr('<', "\<")
+      reason.gsub('>', '\>').gsub('<', '\<')
     end
 
     def format_compile_warning(h)

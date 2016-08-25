@@ -50,7 +50,7 @@ module Danger
           @xcode_summary.report('spec/fixtures/test_errors.json')
           expect(@dangerfile.status_report[:errors]).to eq [
             # rubocop:disable LineLength
-            "**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  " \
+            '**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  ' \
             "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>"
             # rubocop:enable LineLength
           ]
