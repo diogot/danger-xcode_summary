@@ -86,39 +86,43 @@ module Danger
     end
 
     def should_ignore_warning(path)
-      path =~ %r{.*/Frameworks/.*\.framework/.*}
+      path =~ %r{.*/Frameworks/.*\.framework/.*} || path =~ %r{.*/Pods/.*}
+    end
+
+    def escape_reason(reason)
+      reason.tr('>', "\>").tr('<', "\<")
     end
 
     def format_compile_warning(h)
       return nil if should_ignore_warning(h[:file_path])
 
       path = format_path(h[:file_path])
-      "**#{path}**: #{h[:reason]}  \n" \
+      "**#{path}**: #{escape_reason(h[:reason])}  <br />" \
         "```\n" \
         "#{h[:line]}\n" \
-        "```  \n"
+        '```'
     end
 
     def format_format_file_missing_error(h)
       path = format_path(h[:file_path])
-      "**#{h[:reason]}**: #{path}"
+      "**#{escape_reason(h[:reason])}**: #{path}"
     end
 
     def format_undefined_symbols(h)
-      "#{h[:message]}  \n" \
-        "> Symbol: #{h[:symbol]}  \n" \
+      "#{h[:message]}  <br />" \
+        "> Symbol: #{h[:symbol]}  <br />" \
         "> Referenced from: #{h[:reference]}"
     end
 
     def format_duplicate_symbols(h)
-      "#{h[:message]}  \n" \
-        "> #{h[:file_paths].map { |path| path.split('/').last }.join("\n> ")}\n"
+      "#{h[:message]}  <br />" \
+        "> #{h[:file_paths].map { |path| path.split('/').last }.join('<br /> ')}"
     end
 
     def format_test_failure(suite_name, failures)
       failures.map do |f|
         path = format_path(f[:file_path])
-        "**#{suite_name}**: #{f[:test_case]}, #{f[:reason]}  \n  #{path}  \n"
+        "**#{suite_name}**: #{f[:test_case]}, #{escape_reason(f[:reason])}  <br />  #{path}"
       end
     end
   end
