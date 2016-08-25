@@ -31,7 +31,7 @@ module Danger
     #
     # @return JSON object
     #
-    def summary(file_path)
+    def report(file_path)
       if File.file?(file_path)
         xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
         format_summary(xcode_summary)

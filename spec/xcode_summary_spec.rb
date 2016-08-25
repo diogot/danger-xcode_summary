@@ -25,20 +25,20 @@ module Danger
       end
 
       it 'fail if file does not exist' do
-        @xcode_summary.summary('spec/fixtures/inexistent_file.json')
+        @xcode_summary.report('spec/fixtures/inexistent_file.json')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
       end
 
       describe 'summary' do
         it 'formats summary messages' do
-          @xcode_summary.summary('spec/fixtures/summary_messages.json')
+          @xcode_summary.report('spec/fixtures/summary_messages.json')
           expect(@dangerfile.status_report[:messages]).to eq [
             'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
           ]
         end
 
         it 'formats compile warnings' do
-          @xcode_summary.summary('spec/fixtures/summary.json')
+          @xcode_summary.report('spec/fixtures/summary.json')
           expect(@dangerfile.status_report[:warnings]).to eq [
             # rubocop:disable LineLength
             "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  \n```\n            theme = *ptr++;\n```  \n",
@@ -48,11 +48,11 @@ module Danger
         end
 
         it 'formats test errors' do
-          @xcode_summary.summary('spec/fixtures/test_errors.json')
+          @xcode_summary.report('spec/fixtures/test_errors.json')
           expect(@dangerfile.status_report[:errors]).to eq [
             # rubocop:disable LineLength
             "**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got <nil>  \n  "\
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>  \n"
+            "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>  \n"
             # rubocop:enable LineLength
           ]
         end
