@@ -12,6 +12,13 @@
       "reason": "Value stored to 'theme' is never read",
       "line": "            theme = *ptr++;",
       "cursor": "            ^       ~~~~~~"
+    },
+    {
+      "file_name": "ISO8601DateFormatter.m",
+      "file_path": "/Users/diogo/src/MyWeight/MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m:176:19",
+      "reason": "'NSUndefinedDateComponent' is deprecated: first deprecated in iOS 8.0 - Use NSDateComponentUndefined instead [-Wdeprecated-declarations]",
+      "line": "                month_or_week = NSUndefinedDateComponent,",
+      "cursor": "        ^"
     }
   ],
   "errors": [

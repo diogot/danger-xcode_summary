@@ -8,15 +8,17 @@ Gem::Specification.new do |spec|
   spec.version       = XcodeSummary::VERSION
   spec.authors       = ['Diogo Tridapalli', 'Marcelo Fabri']
   spec.email         = ['me@diogot.com', 'me@marcelofabri.com']
-  spec.description   = %q{A short description of danger-xcode_summary.}
-  spec.summary       = %q{A longer description of danger-xcode_summary.}
+  spec.description   = 'A short description of danger-xcode_summary.'
+  spec.summary       = 'A longer description of danger-xcode_summary.'
   spec.homepage      = 'https://github.com/diogot/danger-xcode_summary'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
+
+  spec.add_runtime_dependency 'danger', '~> 2.1'
 
   # General ruby development
   spec.add_development_dependency 'bundler', '~> 1.3'

@@ -13,86 +13,49 @@ module Danger
       before do
         @dangerfile = testing_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
-        @summary = @xcode_summary.read_summary('spec/fixtures/summary.json')
+        @xcode_summary.env.request_source.pr_json = {
+          head: {
+            repo: {
+              html_url: 'https://github.com/diogot/danger-xcode_summary'
+            },
+            sha: '129jef029jf029fj2039fj203f92'
+          }
+        }
+        @xcode_summary.project_root = '/Users/diogo/src/MyWeight/'
       end
 
-      it 'fail if file don\'t exists' do
-        result = @xcode_summary.read_summary('spec/fixtures/inexistent_file.json')
-        # expected = [Danger::Violation.new('summary file not found', true)]
-        expect(result).to be_a Array
-        expect(result.count).to eq(1)
-        violation = result.first
-        expect(violation).to be_a Danger::Violation
-        expect(violation.message).to eq('summary file not found')
-        expect(violation.sticky).to be_truthy
+      it 'fail if file does not exist' do
+        @xcode_summary.report('spec/fixtures/inexistent_file.json')
+        expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
       end
 
-      it 'reads a json summary' do
-        expect(@summary.count).to eq 10
-      end
-      
-      it 'contains warnings' do
-          diagnostic = @summary[:warnings]
-          expect(diagnostic.count).to eq 0
-      end
+      describe 'summary' do
+        it 'formats summary messages' do
+          @xcode_summary.report('spec/fixtures/summary_messages.json')
+          expect(@dangerfile.status_report[:messages]).to eq [
+            'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
+          ]
+        end
 
-      it 'contains ld_warnings' do
-        diagnostic = @summary[:ld_warnings]
-        expect(diagnostic.count).to eq 0
+        it 'formats compile warnings ignoring Pods' do
+          @xcode_summary.report('spec/fixtures/summary.json')
+          expect(@dangerfile.status_report[:warnings]).to eq [
+            # rubocop:disable LineLength
+            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```"
+            # rubocop:enable LineLength
+          ]
+        end
+
+        it 'formats test errors' do
+          @xcode_summary.report('spec/fixtures/test_errors.json')
+          expect(@dangerfile.status_report[:errors]).to eq [
+            # rubocop:disable LineLength
+            '**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  ' \
+            "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>"
+            # rubocop:enable LineLength
+          ]
+        end
       end
-
-      it 'contains compile_warnings' do
-        diagnostic = @summary[:compile_warnings]
-        expect(diagnostic.count).to eq 1
-      end
-
-      it 'contains errors' do
-        diagnostic = @summary[:errors]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains compile_errors' do
-        diagnostic = @summary[:compile_errors]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains file_missing_errors' do
-        diagnostic = @summary[:file_missing_errors]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains undefined_symbols_errors' do
-        diagnostic = @summary[:undefined_symbols_errors]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains duplicate_symbols_errors' do
-        diagnostic = @summary[:duplicate_symbols_errors]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains tests_failures' do
-        diagnostic = @summary[:tests_failures]
-        expect(diagnostic.count).to eq 0
-      end
-
-      it 'contains tests_summary_messages' do
-        diagnostic = @summary[:tests_summary_messages]
-        expect(diagnostic.count).to eq 1
-        expect(diagnostic.first).to eq "\t Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds\n"
-      end
-
-      it 'format summary' do
-
-        github = @dangerfile.github
-        allow(github).to receive(:head_commit) { '129jef029jf029fj2039fj203f92' }
-        request_source = @dangerfile.env.request_source
-        allow(request_source).to receive(:pr_json) { { :head => { :repo => { :html_url => 'https://github.com/diogot/danger-xcode_summary' } } } }
-        
-        @xcode_summary.format_summary(@summary)
-      end
-
     end
   end
 end
-
