@@ -20,9 +20,14 @@ module Danger
   #
   class DangerXcodeSummary < Plugin
     attr_writer :project_root
+    attr_writer :ignored_files
 
     def project_root
       @project_root || Dir.pwd
+    end
+
+    def ignored_files
+      [@ignored_files].flatten.compact
     end
 
     # Reads file with JSON Xcode summary and reports it.
@@ -74,19 +79,29 @@ module Danger
     end
 
     def format_path(path)
-      path = path.gsub(project_root, '') if project_root
-      regex = /^(.*?):(\d*):?\d*$/
-      match = path.match(regex)
-      if match
-        clean_path, line = match.captures
-        path = clean_path + '#L' + line if clean_path && line
-      end
+      clean_path, line = parse_filename(path)
+      path = clean_path + '#L' + line if clean_path && line
 
       github.html_link(path)
     end
 
-    def should_ignore_warning(path)
-      path =~ %r{.*/Frameworks/.*\.framework/.*} || path =~ %r{.*/Pods/.*}
+    def parse_filename(path)
+      regex = /^(.*?):(\d*):?\d*$/
+      match = path.match(regex)
+      if match
+        match.captures
+      end
+    end
+
+    def relative_path(path)
+      return nil if project_root.nil?
+      path.gsub(project_root, '')
+    end
+
+    def should_ignore_warning?(path)
+      parsed = parse_filename(path)
+      path = parsed.first || path
+      ignored_files.any? { |pattern| File.fnmatch(pattern, path) }
     end
 
     def escape_reason(reason)
@@ -94,18 +109,20 @@ module Danger
     end
 
     def format_compile_warning(h)
-      return nil if should_ignore_warning(h[:file_path])
+      path = relative_path(h[:file_path])
+      return nil if should_ignore_warning?(path)
 
-      path = format_path(h[:file_path])
-      "**#{path}**: #{escape_reason(h[:reason])}  <br />" \
+      path_link = format_path(path)
+      "**#{path_link}**: #{escape_reason(h[:reason])}  <br />" \
         "```\n" \
         "#{h[:line]}\n" \
         '```'
     end
 
     def format_format_file_missing_error(h)
-      path = format_path(h[:file_path])
-      "**#{escape_reason(h[:reason])}**: #{path}"
+      path = relative_path(h[:file_path])
+      path_link = format_path(path)
+      "**#{escape_reason(h[:reason])}**: #{path_link}"
     end
 
     def format_undefined_symbols(h)
@@ -121,8 +138,9 @@ module Danger
 
     def format_test_failure(suite_name, failures)
       failures.map do |f|
-        path = format_path(f[:file_path])
-        "**#{suite_name}**: #{f[:test_case]}, #{escape_reason(f[:reason])}  <br />  #{path}"
+        path = relative_path(f[:file_path])
+        path_link = format_path(path)
+        "**#{suite_name}**: #{f[:test_case]}, #{escape_reason(f[:reason])}  <br />  #{path_link}"
       end
     end
   end
