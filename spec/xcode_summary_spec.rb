@@ -37,13 +37,30 @@ module Danger
           ]
         end
 
-        it 'formats compile warnings ignoring Pods' do
+        it 'formats compile warnings' do
           @xcode_summary.report('spec/fixtures/summary.json')
           expect(@dangerfile.status_report[:warnings]).to eq [
             # rubocop:disable LineLength
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```"
+            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```",
+            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176'>MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176</a>**: 'NSUndefinedDateComponent' is deprecated: first deprecated in iOS 8.0 - Use NSDateComponentUndefined instead [-Wdeprecated-declarations]  <br />```\n                month_or_week = NSUndefinedDateComponent,\n```"
             # rubocop:enable LineLength
           ]
+        end
+
+        it 'ignores file when ignored_files matches' do
+          @xcode_summary.ignored_files = '**/Pods/**'
+          @xcode_summary.report('spec/fixtures/summary.json')
+          expect(@dangerfile.status_report[:warnings]).to eq [
+            # rubocop:disable LineLength
+            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```",
+            # rubocop:enable LineLength
+          ]
+        end
+
+        it 'ignores file when ignored_files is an array and matches' do
+          @xcode_summary.ignored_files = ['**/Pods/**', '*.m']
+          @xcode_summary.report('spec/fixtures/summary.json')
+          expect(@dangerfile.status_report[:warnings]).to eq []
         end
 
         it 'formats test errors' do
@@ -51,7 +68,7 @@ module Danger
           expect(@dangerfile.status_report[:errors]).to eq [
             # rubocop:disable LineLength
             '**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  ' \
-            "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>"
+            "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>",
             # rubocop:enable LineLength
           ]
         end
