@@ -20,23 +20,30 @@ module Danger
   class DangerXcodeSummary < Plugin
     # The project root, which will be used to make the paths relative.
     # Defaults to `pwd`.
-    # @attr_writer  String
-    # @return       [void]
-    attr_writer :project_root
+    # @param    [String] value
+    # @return   [String]
+    attr_accessor :project_root
 
     # A globbed string or array of strings which should match the files
     # that you want to ignore warnings on. Defaults to nil.
-    # An example would be `'**/Pods/**' to ignore warnings in Pods that your project uses.
+    # An example would be `'**/Pods/**'` to ignore warnings in Pods that your project uses.
     #
-    # @attr_writer   String or [String]
-    # @return        [void]
-    attr_writer :ignored_files
+    # @param    [String or [String]] value
+    # @return   [[String]]
+    attr_accessor :ignored_files
+
+    def project_root
+      @project_root || Dir.pwd
+    end
+
+    def ignored_files
+      [@ignored_files].flatten.compact
+    end
 
     # Reads a file with JSON Xcode summary and reports it.
     #
-    # @param file_path String
-    #        Path for Xcode summary in JSON format.
-    # @return [void]
+    # @param    [String] file_path Path for Xcode summary in JSON format.
+    # @return   [void]
     def report(file_path)
       if File.file?(file_path)
         xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
@@ -47,14 +54,6 @@ module Danger
     end
 
     private
-
-    def project_root
-      @project_root || Dir.pwd
-    end
-
-    def ignored_files
-      [@ignored_files].flatten.compact
-    end
 
     def format_summary(xcode_summary)
       messages(xcode_summary).each { |s| message(s, sticky: true) }
