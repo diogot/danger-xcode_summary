@@ -1,41 +1,42 @@
 require 'json'
 
 module Danger
-  # This is your plugin class. Any attributes or methods you expose here will
-  # be available from within your Dangerfile.
+  # Shows all build errors, warnings and unit tests results generated from `xcodebuild`.
+  # You need to use [xcpretty](https://github.com/supermarin/xcpretty)
+  # with [xcpretty-json-formatter](https://github.com/marcelofabri/xcpretty-json-formatter)
+  # to generate a JSON file that this plugin can read.
+  # @example Showing summary
   #
-  # To be published on the Danger plugins site, you will need to have
-  # the public interface documented. Danger uses [YARD](http://yardoc.org/)
-  # for generating documentation from your plugin source, and you can verify
-  # by running `danger plugins lint` or `bundle exec rake spec`.
+  #          xcode_summary.report 'xcodebuild.json'
   #
-  # You should replace these comments with a public description of your library.
+  # @example Filtering warnings in Pods
   #
-  # @example Ensure people are well warned about merging on Mondays
-  #
-  #          my_plugin.warn_on_mondays
+  #          xcode_summary.ignored_files = '**/Pods/**'
+  #          xcode_summary.report 'xcodebuild.json'
   #
   # @see  diogot/danger-xcode_summary
-  # @tags monday, weekends, time, rattata
+  # @tags xcode, xcodebuild, format
   #
   class DangerXcodeSummary < Plugin
+    # The project root, which will be used to make the paths relative.
+    # Defaults to `pwd`.
+    # @attr_writer  String
+    # @return       [void]
     attr_writer :project_root
+
+    # A globbed string or array of strings which should match the files
+    # that you want to ignore warnings on. Defaults to nil.
+    # An example would be `'**/Pods/**' to ignore warnings in Pods that your project uses.
+    #
+    # @attr_writer   String or [String]
+    # @return        [void]
     attr_writer :ignored_files
 
-    def project_root
-      @project_root || Dir.pwd
-    end
-
-    def ignored_files
-      [@ignored_files].flatten.compact
-    end
-
-    # Reads file with JSON Xcode summary and reports it.
+    # Reads a file with JSON Xcode summary and reports it.
     #
-    # @param file_path String path for Xcode summary
-    #
-    # @return JSON object
-    #
+    # @param file_path String
+    #        Path for Xcode summary in JSON format.
+    # @return [void]
     def report(file_path)
       if File.file?(file_path)
         xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
@@ -46,6 +47,14 @@ module Danger
     end
 
     private
+
+    def project_root
+      @project_root || Dir.pwd
+    end
+
+    def ignored_files
+      [@ignored_files].flatten.compact
+    end
 
     def format_summary(xcode_summary)
       messages(xcode_summary).each { |s| message(s, sticky: true) }
