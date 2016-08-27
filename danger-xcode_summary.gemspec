@@ -8,8 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = XcodeSummary::VERSION
   spec.authors       = ['Diogo Tridapalli', 'Marcelo Fabri']
   spec.email         = ['me@diogot.com', 'me@marcelofabri.com']
-  spec.description   = 'A short description of danger-xcode_summary.'
-  spec.summary       = 'A longer description of danger-xcode_summary.'
+  spec.description   = 'Show formatted xcodebuild output in your PRs.'
+  spec.summary       = 'A [Danger](http://danger.systems) plugin that shows all build errors, ' \
+                       'warnings and unit tests results generated from `xcodebuild`.'
   spec.homepage      = 'https://github.com/diogot/danger-xcode_summary'
   spec.license       = 'MIT'
 
@@ -18,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'danger', '~> 2.1'
+  spec.add_runtime_dependency 'danger-plugin-api', '~> 1.0'
 
   # General ruby development
   spec.add_development_dependency 'bundler', '~> 1.3'
