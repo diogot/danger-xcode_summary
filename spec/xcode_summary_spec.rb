@@ -21,7 +21,7 @@ module Danger
             sha: '129jef029jf029fj2039fj203f92'
           }
         }
-        @xcode_summary.project_root = '/Users/diogo/src/MyWeight/'
+        @xcode_summary.project_root = '/Users/diogo/src/MyWeight'
       end
 
       it 'fail if file does not exist' do

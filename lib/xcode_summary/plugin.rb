@@ -33,7 +33,9 @@ module Danger
     attr_accessor :ignored_files
 
     def project_root
-      @project_root || Dir.pwd
+      root = @project_root || Dir.pwd
+      root += '/' unless root.end_with? '/'
+      root
     end
 
     def ignored_files
