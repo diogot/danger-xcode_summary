@@ -56,7 +56,7 @@ module Danger
     private
 
     def format_summary(xcode_summary)
-      messages(xcode_summary).each { |s| message(s, sticky: true) }
+      messages(xcode_summary).each { |s| message(s, sticky: false) }
       warnings(xcode_summary).each { |s| warn(s, sticky: false) }
       errors(xcode_summary).each { |s| fail(s, sticky: false) }
     end
