@@ -10,6 +10,76 @@ You need to use [xcpretty](https://github.com/supermarin/xcpretty) with
 [xcpretty-json-formatter](https://github.com/marcelofabri/xcpretty-json-formatter) 
 to generate a JSON file that this plugin can read.
 
+## How does it look?
+
+<table>
+  <thead>
+    <tr>
+      <th width="50"></th>
+      <th width="100%">
+          1 Error
+      </th>
+     </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><g-emoji alias="no_entry_sign" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f6ab.png">🚫</g-emoji></td>
+      <td>
+<strong>MyWeightTests.MyWeightTests</strong>: testError, failed - :w:  <br>  <a href="https://github.com/Invariante/MyWeight/blob/0101261efd67cd1fb0d682d88476fdee3d17cf86/MyWeightTests/MyWeightTests.swift#L26">MyWeightTests/MyWeightTests.swift#L26</a>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th width="50"></th>
+      <th width="100%">
+          2 Warnings
+      </th>
+     </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td><g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji></td>
+      <td>
+<strong><a href="https://github.com/Invariante/MyWeight/blob/0101261efd67cd1fb0d682d88476fdee3d17cf86/MyWeight/ViewController.swift#L35">MyWeight/ViewController.swift#L35</a></strong>: initialization of immutable value ‘bla’ was never used; consider replacing with assignment to ‘_’ or removing it  <br><code>
+        let bla = "unused variable"
+</code>
+</td>
+    </tr>
+    <tr>
+      <td><g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji></td>
+      <td>
+<strong><a href="https://github.com/Invariante/MyWeight/blob/0101261efd67cd1fb0d682d88476fdee3d17cf86/Bla.m#L32">Bla.m#L32</a></strong>: Value stored to ‘theme’ is never read  <br><code>
+            theme = *ptr++;
+</code>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th width="50"></th>
+      <th width="100%">
+          1 Message
+      </th>
+     </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td><g-emoji alias="book" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4d6.png">📖</g-emoji></td>
+      <td>Executed 5 tests, with 1 failure (0 unexpected) in 0.032 (0.065) seconds</td>
+    </tr>
+      </tr>
+  </tbody>
+</table>
+
 ## Installation
 
 Add this line to your Gemfile:
