@@ -106,7 +106,7 @@ xcode_summary.report 'xcodebuild.json'
 
 ## License
 
-MIT
+danger-xcode_summary is released under the MIT license. See [LICENSE.txt](LICENSE.txt) for details.
 
 ## Development
 

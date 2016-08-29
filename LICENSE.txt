@@ -1,4 +1,4 @@
-Copyright (c) 2016 Diogo Tridapalli <me@diogot.com>
+Copyright (c) 2016 Diogo Tridapalli <me@diogot.com> and Marcelo Fabri <me@marcelofabri.com>
 
 MIT License
 
