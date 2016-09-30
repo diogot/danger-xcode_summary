@@ -1,7 +1,7 @@
 # danger-xcode_summary
 
 [![License](http://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE.txt)
-[![Gem](https://img.shields.io/gem/v/danger-xcode_summary?style=flat)](http://rubygems.org/gems/danger-xcode_summary)
+[![Gem Version](https://badge.fury.io/rb/danger-xcode_summary.svg)](https://badge.fury.io/rb/danger-xcode_summary)
 [![Build Status](https://travis-ci.org/diogot/danger-xcode_summary.svg?branch=master)](https://travis-ci.org/diogot/danger-xcode_summary)
 
 A [Danger](http://danger.systems) plugin that shows all build errors, warnings and unit tests results generated from `xcodebuild`.
