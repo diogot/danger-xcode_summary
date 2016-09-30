@@ -32,6 +32,12 @@ module Danger
     # @return   [[String]]
     attr_accessor :ignored_files
 
+    # Defines if the test summary will be sticky or not.
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :sticky_summary
+
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -40,6 +46,10 @@ module Danger
 
     def ignored_files
       [@ignored_files].flatten.compact
+    end
+
+    def sticky_summary
+      @sticky_summary || false
     end
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -58,7 +68,7 @@ module Danger
     private
 
     def format_summary(xcode_summary)
-      messages(xcode_summary).each { |s| message(s, sticky: true) }
+      messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
       warnings(xcode_summary).each { |s| warn(s, sticky: false) }
       errors(xcode_summary).each { |s| fail(s, sticky: false) }
     end

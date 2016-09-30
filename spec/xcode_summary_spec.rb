@@ -24,6 +24,10 @@ module Danger
         @xcode_summary.project_root = '/Users/diogo/src/MyWeight'
       end
 
+      it 'sets sticky_summary to false as default' do
+        expect(@xcode_summary.sticky_summary).to eq false
+      end
+
       it 'fail if file does not exist' do
         @xcode_summary.report('spec/fixtures/inexistent_file.json')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
