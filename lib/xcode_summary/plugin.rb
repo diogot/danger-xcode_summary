@@ -44,6 +44,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :test_summary
 
+    # Defines a RequestSource object for html/markdown formatting method calls.
+    # Defaults to `github`.
+    # @param    [RequestSource] value
+    # @return   [RequestSource]
+    attr_accessor :repo_provider
+
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -60,6 +66,10 @@ module Danger
 
     def test_summary
       @test_summary .nil? ? true : @test_summary
+    end
+
+    def repo_provider
+      @repo_provider || github
     end
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -116,7 +126,7 @@ module Danger
       clean_path, line = parse_filename(path)
       path = clean_path + '#L' + line if clean_path && line
 
-      github.html_link(path)
+      repo_provider.html_link(path)
     end
 
     def parse_filename(path)
