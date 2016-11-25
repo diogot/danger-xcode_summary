@@ -102,7 +102,11 @@ module Danger
       clean_path, line = parse_filename(path)
       path = clean_path + '#L' + line if clean_path && line
 
-      github.html_link(path)
+      if defined? github
+        github.html_link(path)
+      elsif defined? bitbucket_server
+        bitbucket_server.html_link(path)
+      end
     end
 
     def parse_filename(path)
