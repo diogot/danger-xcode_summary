@@ -51,6 +51,15 @@ module Danger
           ]
         end
 
+        it 'formats compile warnings with empty line' do
+          @xcode_summary.report('spec/fixtures/summary_with_empty_line.json')
+          expect(@dangerfile.status_report[:warnings]).to eq [
+            # rubocop:disable LineLength
+            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001'>/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001</a>**: File should contain 400 lines or less: currently contains 10001  <br />"
+            # rubocop:enable LineLength
+          ]
+        end
+
         it 'ignores file when ignored_files matches' do
           @xcode_summary.ignored_files = '**/Pods/**'
           @xcode_summary.report('spec/fixtures/summary.json')
