@@ -133,10 +133,16 @@ module Danger
       return nil if should_ignore_warning?(path)
 
       path_link = format_path(path)
-      "**#{path_link}**: #{escape_reason(h[:reason])}  <br />" \
-        "```\n" \
-        "#{h[:line]}\n" \
-        '```'
+
+      warning = "**#{path_link}**: #{escape_reason(h[:reason])}  <br />"
+      if h[:line] && h[:line].empty? == false
+        "#{warning}" \
+          "```\n" \
+          "#{h[:line]}\n" \
+          '```'
+      else
+        warning
+      end
     end
 
     def format_format_file_missing_error(h)
