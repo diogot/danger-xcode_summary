@@ -135,7 +135,7 @@ module Danger
       path_link = format_path(path)
 
       warning = "**#{path_link}**: #{escape_reason(h[:reason])}  <br />"
-      if h[:line] && h[:line].empty? == false
+      if h[:line] && !h[:line].empty?
         "#{warning}" \
           "```\n" \
           "#{h[:line]}\n" \
