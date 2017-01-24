@@ -4,5 +4,5 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'danger'
-gem 'yard'
 gem 'rubocop'
+gem 'yard'
