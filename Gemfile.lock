@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-xcode_summary (0.1.0)
+    danger-xcode_summary (0.1.1)
       danger-plugin-api (~> 1.0)
 
 GEM
@@ -136,4 +136,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.13.1
+   1.13.7
