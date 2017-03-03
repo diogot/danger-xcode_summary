@@ -28,17 +28,32 @@ module Danger
         expect(@xcode_summary.sticky_summary).to eq false
       end
 
+      it 'sets test_summary to true as default' do
+        expect(@xcode_summary.test_summary).to eq true
+      end
+
       it 'fail if file does not exist' do
         @xcode_summary.report('spec/fixtures/inexistent_file.json')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
       end
 
       describe 'summary' do
-        it 'formats summary messages' do
-          @xcode_summary.report('spec/fixtures/summary_messages.json')
-          expect(@dangerfile.status_report[:messages]).to eq [
-            'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
-          ]
+        context 'enabled' do
+          it 'formats summary messages' do
+            @xcode_summary.test_summary = true
+            @xcode_summary.report('spec/fixtures/summary_messages.json')
+            expect(@dangerfile.status_report[:messages]).to eq [
+              'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
+            ]
+          end
+        end
+
+        context 'disabled' do
+          it 'shows no summary messages' do
+            @xcode_summary.test_summary = false
+            @xcode_summary.report('spec/fixtures/summary_messages.json')
+            expect(@dangerfile.status_report[:messages]).to eq []
+          end
         end
 
         it 'formats compile warnings' do

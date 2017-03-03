@@ -38,6 +38,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :sticky_summary
 
+    # Defines if the build summary is shown or not.
+    # Defaults to `true`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :test_summary
+
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -50,6 +56,10 @@ module Danger
 
     def sticky_summary
       @sticky_summary || false
+    end
+
+    def test_summary
+      @test_summary .nil? ? true : @test_summary
     end
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -74,9 +84,13 @@ module Danger
     end
 
     def messages(xcode_summary)
-      [
-        xcode_summary[:tests_summary_messages]
-      ].flatten.uniq.compact.map(&:strip)
+      if test_summary
+        [
+          xcode_summary[:tests_summary_messages]
+        ].flatten.uniq.compact.map(&:strip)
+      else
+        []
+      end
     end
 
     def warnings(xcode_summary)
