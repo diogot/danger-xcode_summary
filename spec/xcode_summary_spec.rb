@@ -13,14 +13,7 @@ module Danger
       before do
         @dangerfile = testing_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
-        @xcode_summary.env.request_source.pr_json = {
-          head: {
-            repo: {
-              html_url: 'https://github.com/diogot/danger-xcode_summary'
-            },
-            sha: '129jef029jf029fj2039fj203f92'
-          }
-        }
+        @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/pr_json.json'))
         @xcode_summary.project_root = '/Users/diogo/src/MyWeight'
       end
 
