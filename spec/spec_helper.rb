@@ -52,8 +52,23 @@ def testing_env
   }
 end
 
+def testing_bitbucket_env
+  {
+    'GIT_URL' => 'https://github.com/diogot/danger-xcode_summary.git',
+    'JENKINS_URL' => 'http://jenkins.server.com/',
+    'DANGER_BITBUCKETCLOUD_USERNAME' => 'username',
+    'DANGER_BITBUCKETCLOUD_PASSWORD' => 'password'
+  }
+end
+
 # A stubbed out Dangerfile for use in tests
 def testing_dangerfile
   env = Danger::EnvironmentManager.new(testing_env)
+  Danger::Dangerfile.new(env, testing_ui)
+end
+
+# A stubbed out Dangerfile with Bitbucket as a request_source for use in tests
+def testing_bitbucket_dangerfile
+  env = Danger::EnvironmentManager.new(testing_bitbucket_env)
   Danger::Dangerfile.new(env, testing_ui)
 end
