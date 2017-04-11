@@ -42,6 +42,10 @@ Style/RedundantReturn:
 Style/IfUnlessModifier:
   Enabled: false
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
   Max: 320
