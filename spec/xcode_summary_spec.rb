@@ -95,5 +95,26 @@ module Danger
         end
       end
     end
+
+    # Second environment with different request_source
+    describe 'with bitbucket request_source' do
+      before do
+        @dangerfile = testing_bitbucket_dangerfile
+        @xcode_summary = @dangerfile.xcode_summary
+        # rubocop:disable LineLength
+        @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/bitbucket_pr.json'), symbolize_names: true)
+        # rubocop:enable LineLength
+        @xcode_summary.project_root = '/Users/diogo/src/danger-xcode_summary'
+      end
+
+      describe 'where request source' do
+        it 'should be bitbucket' do
+          path = @xcode_summary.send(:format_path, 'lib/xcode_summary/plugin.rb#L3')
+          # rubocop:disable LineLength
+          expect(path).to eq "<a href='https://github.com/diogot/danger-xcode_summary/lib/xcode_summary/plugin.rb?at=4d4c0f31857e3185b51b6865a0700525bc0cb2bb#L3'>lib/xcode_summary/plugin.rb</a>"
+          # rubocop:enable LineLength
+        end
+      end
+    end
   end
 end

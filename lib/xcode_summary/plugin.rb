@@ -116,7 +116,12 @@ module Danger
       clean_path, line = parse_filename(path)
       path = clean_path + '#L' + line if clean_path && line
 
-      github.html_link(path)
+      # Pick a Dangerfile plugin for a chosen request_source
+      # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
+      plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
+      plugin = plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
+
+      plugin.html_link(path)
     end
 
     def parse_filename(path)
