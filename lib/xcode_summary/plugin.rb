@@ -1,5 +1,4 @@
 require 'json'
-require 'pathname'
 
 module Danger
   # Shows all build errors, warnings and unit tests results generated from `xcodebuild`.
