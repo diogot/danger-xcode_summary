@@ -18,8 +18,8 @@ module Danger
   # @tags xcode, xcodebuild, format
   #
   class DangerXcodeSummary < Plugin
-    Struct.new('Location', :file_name, :file_path, :line)
-    Struct.new('Result', :message, :location)
+    Location = Struct.new(:file_name, :file_path, :line)
+    Result = Struct.new(:message, :location)
 
     # The project root, which will be used to make the paths relative.
     # Defaults to `pwd`.
@@ -120,10 +120,10 @@ module Danger
 
     def warnings(xcode_summary)
       [
-        xcode_summary.fetch(:warnings, []).map { |message| Struct::Result.new(message, nil) },
-        xcode_summary.fetch(:ld_warnings, []).map { |message| Struct::Result.new(message, nil) },
+        xcode_summary.fetch(:warnings, []).map { |message| Result.new(message, nil) },
+        xcode_summary.fetch(:ld_warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_warnings, {}).map do |h|
-          Struct::Result.new(format_compile_warning(h), parse_location(h))
+          Result.new(format_compile_warning(h), parse_location(h))
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
     end
@@ -132,20 +132,20 @@ module Danger
       [
         xcode_summary[:errors],
         xcode_summary.fetch(:compile_errors, {}).map do |h|
-          Struct::Result.new(format_compile_warning(h), parse_location(h))
+          Result.new(format_compile_warning(h), parse_location(h))
         end,
         xcode_summary.fetch(:file_missing_errors, {}).map do |h|
-          Struct::Result.new(format_format_file_missing_error(h), parse_location(h))
+          Result.new(format_format_file_missing_error(h), parse_location(h))
         end,
         xcode_summary.fetch(:undefined_symbols_errors, {}).map do |h|
-          Struct::Result.new(format_undefined_symbols(h), nil)
+          Result.new(format_undefined_symbols(h), nil)
         end,
         xcode_summary.fetch(:duplicate_symbols_errors, {}).map do |h|
-          Struct::Result.new(format_duplicate_symbols(h), nil)
+          Result.new(format_duplicate_symbols(h), nil)
         end,
         xcode_summary.fetch(:tests_failures, {}).map do |test_suite, failures|
           failures.map do |failure|
-            Struct::Result.new(format_test_failure(test_suite, failure), parse_test_location(failure))
+            Result.new(format_test_failure(test_suite, failure), parse_test_location(failure))
           end
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
@@ -153,13 +153,13 @@ module Danger
 
     def parse_location(h)
       file_path, line, _column = h[:file_path].split(':')
-      Struct::Location.new(h[:file_name], file_path, line.to_i)
+      Location.new(h[:file_name], file_path, line.to_i)
     end
 
     def parse_test_location(failure)
       path, line = failure[:file_path].split(':')
       file_name = relative_path(path)
-      Struct::Location.new(file_name, path, line.to_i)
+      Location.new(file_name, path, line.to_i)
     end
 
     def format_path(path)
