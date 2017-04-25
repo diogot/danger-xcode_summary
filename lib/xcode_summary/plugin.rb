@@ -1,4 +1,5 @@
 require 'json'
+require 'pathname'
 
 module Danger
   # Shows all build errors, warnings and unit tests results generated from `xcodebuild`.
@@ -18,6 +19,9 @@ module Danger
   # @tags xcode, xcodebuild, format
   #
   class DangerXcodeSummary < Plugin
+    Struct.new("Location", :file_name, :file_path, :line)
+    Struct.new("Result", :message, :location)
+
     # The project root, which will be used to make the paths relative.
     # Defaults to `pwd`.
     # @param    [String] value
@@ -44,6 +48,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :test_summary
 
+    # Defines if using inline comment or not.
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :inline_mode
+
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -59,7 +69,11 @@ module Danger
     end
 
     def test_summary
-      @test_summary .nil? ? true : @test_summary
+      @test_summary.nil? ? true : @test_summary
+    end
+
+    def inline_mode
+      @inline_mode || false
     end
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -79,8 +93,20 @@ module Danger
 
     def format_summary(xcode_summary)
       messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
-      warnings(xcode_summary).each { |s| warn(s, sticky: false) }
-      errors(xcode_summary).each { |s| fail(s, sticky: false) }
+      warnings(xcode_summary).each do |result|
+        if inline_mode && result.location
+          warn(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
+        else
+          warn(result.message, sticky: false)
+        end
+      end
+      errors(xcode_summary).each do |result|
+        if inline_mode && result.location
+          fail(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
+        else
+          fail(result.message, sticky: false)
+        end
+      end
     end
 
     def messages(xcode_summary)
@@ -95,21 +121,35 @@ module Danger
 
     def warnings(xcode_summary)
       [
-        xcode_summary[:warnings],
-        xcode_summary[:ld_warnings],
-        xcode_summary.fetch(:compile_warnings, {}).map { |s| format_compile_warning(s) }
-      ].flatten.uniq.compact
+        xcode_summary.fetch(:warnings, []).map { |message| Struct::Result.new(message, nil) },
+        xcode_summary.fetch(:ld_warnings, []).map { |message| Struct::Result.new(message, nil) },
+        xcode_summary.fetch(:compile_warnings, {}).map { |h| Struct::Result.new(format_compile_warning(h), parse_location(h)) }
+      ].flatten.uniq.compact.reject { |result| result.message.nil? }
     end
 
     def errors(xcode_summary)
       [
         xcode_summary[:errors],
-        xcode_summary.fetch(:compile_errors, {}).map { |s| format_compile_warning(s) },
-        xcode_summary.fetch(:file_missing_errors, {}).map { |s| format_format_file_missing_error(s) },
-        xcode_summary.fetch(:undefined_symbols_errors, {}).map { |s| format_undefined_symbols(s) },
-        xcode_summary.fetch(:duplicate_symbols_errors, {}).map { |s| format_duplicate_symbols(s) },
-        xcode_summary.fetch(:tests_failures, {}).map { |k, v| format_test_failure(k, v) }.flatten
-      ].flatten.uniq.compact
+        xcode_summary.fetch(:compile_errors, {}).map { |h| Struct::Result.new(format_compile_warning(h), parse_location(h)) },
+        xcode_summary.fetch(:file_missing_errors, {}).map { |h| Struct::Result.new(format_format_file_missing_error(h), parse_location(h)) },
+        xcode_summary.fetch(:undefined_symbols_errors, {}).map { |h| Struct::Result.new(format_undefined_symbols(h), nil) },
+        xcode_summary.fetch(:duplicate_symbols_errors, {}).map { |h| Struct::Result.new(format_duplicate_symbols(h), nil) },
+        xcode_summary.fetch(:tests_failures, {}).map do |test_suite, failures|
+          failures.map do |failure|
+            Struct::Result.new(format_test_failure(test_suite, failure), parse_test_location(failure))
+          end
+        end.flatten
+      ].flatten.uniq.compact.reject { |result| result.message.nil? }
+    end
+
+    def parse_location(h)
+      Struct::Location.new(h[:file_name], h[:file_path], h[:line])
+    end
+
+    def parse_test_location(failure)
+      path, line = failure[:file_path].split(":")
+      file_name = relative_path(path)
+      Struct::Location.new(file_name, path, line)
     end
 
     def format_path(path)
@@ -181,12 +221,10 @@ module Danger
         "> #{h[:file_paths].map { |path| path.split('/').last }.join('<br /> ')}"
     end
 
-    def format_test_failure(suite_name, failures)
-      failures.map do |f|
-        path = relative_path(f[:file_path])
-        path_link = format_path(path)
-        "**#{suite_name}**: #{f[:test_case]}, #{escape_reason(f[:reason])}  <br />  #{path_link}"
-      end
+    def format_test_failure(suite_name, failure)
+      path = relative_path(failure[:file_path])
+      path_link = format_path(path)
+      "**#{suite_name}**: #{failure[:test_case]}, #{escape_reason(failure[:reason])}  <br />  #{path_link}"
     end
   end
 end
