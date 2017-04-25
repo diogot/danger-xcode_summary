@@ -105,6 +105,15 @@ xcode_summary.ignored_files = '**/Pods/**'
 xcode_summary.report 'xcodebuild.json'
 ```
 
+You can use `inline_mode`.
+When this value is enabled, each warnings and errors are commented on each lines.
+
+```ruby
+# Comment on each lines
+xcode_summary.inline_mode = true
+xcode_summary.report 'xcodebuild.json'
+```
+
 ## License
 
 danger-xcode_summary is released under the MIT license. See [LICENSE.txt](LICENSE.txt) for details.
