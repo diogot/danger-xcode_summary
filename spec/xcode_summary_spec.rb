@@ -99,7 +99,7 @@ module Danger
             @xcode_summary.inline_mode = true
           end
 
-          it 'formats test errors' do
+          it 'asserts errors on the line' do
             allow(@xcode_summary).to receive(:fail)
             @xcode_summary.report('spec/fixtures/test_errors.json')
             expect(@xcode_summary).to have_received(:fail).with(
@@ -110,7 +110,7 @@ module Danger
             )
           end
 
-          it 'formats compile warnings' do
+          it 'asserts warning on the line' do
             allow(@xcode_summary).to receive(:warn)
             @xcode_summary.report('spec/fixtures/summary.json')
             expect(@xcode_summary).to have_received(:warn).with(
