@@ -42,7 +42,6 @@ to generate a JSON file that this plugin can read.
      </tr>
   </thead>
   <tbody>
-
     <tr>
       <td><g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji></td>
       <td>
@@ -72,7 +71,6 @@ to generate a JSON file that this plugin can read.
      </tr>
   </thead>
   <tbody>
-
     <tr>
       <td><g-emoji alias="book" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4d6.png">📖</g-emoji></td>
       <td>Executed 5 tests, with 1 failure (0 unexpected) in 0.032 (0.065) seconds</td>
