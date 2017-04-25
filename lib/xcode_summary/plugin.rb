@@ -153,13 +153,14 @@ module Danger
     end
 
     def parse_location(h)
-      Struct::Location.new(h[:file_name], h[:file_path], h[:line])
+      file_path, line, _column = h[:file_path].split(':')
+      Struct::Location.new(h[:file_name], file_path, line.to_i)
     end
 
     def parse_test_location(failure)
       path, line = failure[:file_path].split(':')
       file_name = relative_path(path)
-      Struct::Location.new(file_name, path, line)
+      Struct::Location.new(file_name, path, line.to_i)
     end
 
     def format_path(path)

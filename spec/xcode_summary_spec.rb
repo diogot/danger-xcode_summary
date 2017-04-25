@@ -93,6 +93,40 @@ module Danger
             # rubocop:enable LineLength
           ]
         end
+
+        context 'with inline_mode' do
+          before do
+            @xcode_summary.inline_mode = true
+          end
+
+          it 'formats test errors' do
+            allow(@xcode_summary).to receive(:fail)
+            @xcode_summary.report('spec/fixtures/test_errors.json')
+            expect(@xcode_summary).to have_received(:fail).with(
+              instance_of(String),
+              sticky: false,
+              file: 'MyWeight/MyWeightTests/Tests.swift',
+              line: 86
+            )
+          end
+
+          it 'formats compile warnings' do
+            allow(@xcode_summary).to receive(:warn)
+            @xcode_summary.report('spec/fixtures/summary.json')
+            expect(@xcode_summary).to have_received(:warn).with(
+              instance_of(String),
+              sticky: false,
+              file: 'Bla.m',
+              line: 32
+            )
+            expect(@xcode_summary).to have_received(:warn).with(
+              instance_of(String),
+              sticky: false,
+              file: 'ISO8601DateFormatter.m',
+              line: 176
+            )
+          end
+        end
       end
     end
 
