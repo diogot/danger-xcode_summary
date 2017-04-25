@@ -80,6 +80,9 @@ Style/RedundantSelf:
 Metrics/MethodLength:
   Max: 60
 
+Metrics/ModuleLength:
+  Enabled: false
+
 # We're not there yet
 Style/Documentation:
   Enabled: false
