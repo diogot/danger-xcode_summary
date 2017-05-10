@@ -94,6 +94,14 @@ module Danger
           ]
         end
 
+        it 'formats errors' do
+          @xcode_summary.report('spec/fixtures/errors.json')
+          expect(@dangerfile.status_report[:errors]).to eq [
+            'some error',
+            'another error'
+          ]
+        end
+
         context 'with inline_mode' do
           before do
             @xcode_summary.inline_mode = true

@@ -130,7 +130,7 @@ module Danger
 
     def errors(xcode_summary)
       [
-        xcode_summary[:errors],
+        xcode_summary.fetch(:errors, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_errors, {}).map do |h|
           Result.new(format_compile_warning(h), parse_location(h))
         end,
