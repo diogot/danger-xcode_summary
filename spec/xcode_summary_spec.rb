@@ -135,6 +135,20 @@ module Danger
             )
           end
         end
+
+        context 'with ignored_categories' do
+          before { @xcode_summary.ignored_categories = %i[errors ld_warnings] }
+
+          it 'asserts no errors' do
+            @xcode_summary.report('spec/fixtures/errors.json')
+            expect(@dangerfile.status_report[:errors]).to be_empty
+          end
+
+          it 'asserts no warnings' do
+            @xcode_summary.report('spec/fixtures/ld_warnings.json')
+            expect(@dangerfile.status_report[:warnings]).to be_empty
+          end
+        end
       end
     end
 
