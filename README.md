@@ -100,6 +100,10 @@ You can also ignore warnings from certain files by setting `ignored_files`:
 ```ruby
 # Ignoring warnings from Pods
 xcode_summary.ignored_files = '**/Pods/**'
+
+# Ignoring warnings for ld_warnings
+xcode_summary.ignored_categories = %i(ld_warnings)
+
 xcode_summary.report 'xcodebuild.json'
 ```
 
