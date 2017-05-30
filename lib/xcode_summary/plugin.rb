@@ -40,9 +40,9 @@ module Danger
     # Defaults to empty array.
     # An example would be `%i(ld_warnings)` to ignore warnings for ld_warnings.
     #
-    # @param    [[Symbol]] value
-    # @return   [[Symbol]]
-    attr_accessor :ignored_categories
+    # @param    [Block value
+    # @return   [Block]
+    attr_accessor :ignored_warnings
 
     # Defines if the test summary will be sticky or not.
     # Defaults to `false`.
@@ -72,8 +72,8 @@ module Danger
       [@ignored_files].flatten.compact
     end
 
-    def ignored_categories
-      @ignored_categories || []
+    def ignored_warnings(&block)
+      @ignored_warnings ||= block
     end
 
     def sticky_summary
@@ -132,19 +132,18 @@ module Danger
     end
 
     def warnings(xcode_summary)
-      xcode_summary = xcode_summary.delete_if { |k, _| ignored_categories.include?(k) }
-      [
+      warnings = [
         xcode_summary.fetch(:warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:ld_warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_warnings, {}).map do |h|
           Result.new(format_compile_warning(h), parse_location(h))
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
+      warnings.delete_if(&ignored_warnings)
     end
 
     def errors(xcode_summary)
-      xcode_summary = xcode_summary.delete_if { |k, _| ignored_categories.include?(k) }
-      [
+      errors = [
         xcode_summary.fetch(:errors, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_errors, {}).map do |h|
           Result.new(format_compile_warning(h), parse_location(h))
@@ -164,6 +163,7 @@ module Danger
           end
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
+      errors.delete_if(&ignored_warnings)
     end
 
     def parse_location(h)
