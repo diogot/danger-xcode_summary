@@ -35,14 +35,12 @@ module Danger
     # @return   [[String]]
     attr_accessor :ignored_files
 
-    # A array of symbols which indicates category name
-    # that you want to ignore warnings on.
-    # Defaults to empty array.
-    # An example would be `%i(ld_warnings)` to ignore warnings for ld_warnings.
+    # A block that filters specific results.
+    # An example would be `lambda { |result| result.message.start_with?('ld') }` to ignore results for ld_warnings.
     #
     # @param    [Block value
     # @return   [Block]
-    attr_accessor :ignored_warnings
+    attr_accessor :ignored_results
 
     # Defines if the test summary will be sticky or not.
     # Defaults to `false`.
@@ -72,8 +70,8 @@ module Danger
       [@ignored_files].flatten.compact
     end
 
-    def ignored_warnings(&block)
-      @ignored_warnings ||= block
+    def ignored_results(&block)
+      @ignored_results ||= block
     end
 
     def sticky_summary
@@ -139,7 +137,7 @@ module Danger
           Result.new(format_compile_warning(h), parse_location(h))
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
-      warnings.delete_if(&ignored_warnings)
+      warnings.delete_if(&ignored_results)
     end
 
     def errors(xcode_summary)
@@ -163,7 +161,7 @@ module Danger
           end
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
-      errors.delete_if(&ignored_warnings)
+      errors.delete_if(&ignored_results)
     end
 
     def parse_location(h)

@@ -136,9 +136,9 @@ module Danger
           end
         end
 
-        context 'with ignored_warnings' do
+        context 'with ignored_results' do
           before do
-            @xcode_summary.ignored_warnings { |result| result.message.start_with? 'some' }
+            @xcode_summary.ignored_results { |result| result.message.start_with? 'some' }
           end
 
           it 'asserts no errors' do
