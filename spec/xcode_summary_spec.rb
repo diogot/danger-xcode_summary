@@ -135,6 +135,22 @@ module Danger
             )
           end
         end
+
+        context 'with ignored_results' do
+          before do
+            @xcode_summary.ignored_results { |result| result.message.start_with? 'some' }
+          end
+
+          it 'asserts no errors' do
+            @xcode_summary.report('spec/fixtures/errors.json')
+            expect(@dangerfile.status_report[:errors]).to eq ['another error']
+          end
+
+          it 'asserts no warnings' do
+            @xcode_summary.report('spec/fixtures/ld_warnings.json')
+            expect(@dangerfile.status_report[:warnings]).to eq ['another warning']
+          end
+        end
       end
     end
 

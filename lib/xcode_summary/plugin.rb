@@ -35,6 +35,13 @@ module Danger
     # @return   [[String]]
     attr_accessor :ignored_files
 
+    # A block that filters specific results.
+    # An example would be `lambda { |result| result.message.start_with?('ld') }` to ignore results for ld_warnings.
+    #
+    # @param    [Block value
+    # @return   [Block]
+    attr_accessor :ignored_results
+
     # Defines if the test summary will be sticky or not.
     # Defaults to `false`.
     # @param    [Boolean] value
@@ -61,6 +68,10 @@ module Danger
 
     def ignored_files
       [@ignored_files].flatten.compact
+    end
+
+    def ignored_results(&block)
+      @ignored_results ||= block
     end
 
     def sticky_summary
@@ -119,17 +130,18 @@ module Danger
     end
 
     def warnings(xcode_summary)
-      [
+      warnings = [
         xcode_summary.fetch(:warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:ld_warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_warnings, {}).map do |h|
           Result.new(format_compile_warning(h), parse_location(h))
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
+      warnings.delete_if(&ignored_results)
     end
 
     def errors(xcode_summary)
-      [
+      errors = [
         xcode_summary.fetch(:errors, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:compile_errors, {}).map do |h|
           Result.new(format_compile_warning(h), parse_location(h))
@@ -149,6 +161,7 @@ module Danger
           end
         end
       ].flatten.uniq.compact.reject { |result| result.message.nil? }
+      errors.delete_if(&ignored_results)
     end
 
     def parse_location(h)
