@@ -25,6 +25,10 @@ module Danger
         expect(@xcode_summary.test_summary).to eq true
       end
 
+      it 'sets warnings_as_errors to false as default' do
+        expect(@xcode_summary.warnings_as_errors).to eq false
+      end
+
       it 'fail if file does not exist' do
         @xcode_summary.report('spec/fixtures/inexistent_file.json')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']

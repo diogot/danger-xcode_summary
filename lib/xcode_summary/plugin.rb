@@ -93,7 +93,7 @@ module Danger
     end
 
     def warnings_as_errors
-        @warnings_as_errors || false
+      @warnings_as_errors || false
     end
 
     # Reads a file with JSON Xcode summary and reports it.
