@@ -60,6 +60,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :inline_mode
 
+    # Defines if warnings should be shown as errors.
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :warnings_as_errors
+
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -86,6 +92,10 @@ module Danger
       @inline_mode || false
     end
 
+    def warnings_as_errors
+        @warnings_as_errors || false
+    end
+
     # Reads a file with JSON Xcode summary and reports it.
     #
     # @param    [String] file_path Path for Xcode summary in JSON format.
@@ -105,9 +115,17 @@ module Danger
       messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
       warnings(xcode_summary).each do |result|
         if inline_mode && result.location
-          warn(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
+          if warnings_as_errors
+            fail(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
+          else
+            warn(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
+          end
         else
-          warn(result.message, sticky: false)
+          if warnings_as_errors
+            fail(result.message, sticky: false)
+          else
+            warn(result.message, sticky: false)
+          end
         end
       end
       errors(xcode_summary).each do |result|
