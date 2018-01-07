@@ -118,6 +118,12 @@ xcode_summary.inline_mode = true
 xcode_summary.report 'xcodebuild.json'
 ```
 
+You can treat warnings as errors with `warnings_as_errors`.
+```ruby
+xcode_summary.warnings_as_errors = true
+xcode_summary.report 'xcodebuild.json'
+```
+
 ## License
 
 danger-xcode_summary is released under the MIT license. See [LICENSE.txt](LICENSE.txt) for details.
