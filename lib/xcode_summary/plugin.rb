@@ -99,6 +99,22 @@ module Danger
       end
     end
 
+    # Reads a file with JSON Xcode summary and reports its warning and error count.
+    #
+    # @param    [String] file_path Path for Xcode summary in JSON format.
+    # @return   [String] JSON string with warningCount and errorCount
+    def warning_error_count(file_path)
+      if File.file?(file_path)
+        xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
+        warning_count = warnings(xcode_summary).count
+        error_count = errors(xcode_summary).count
+        result = { warnings: warning_count, errors: error_count }
+        result.to_json
+      else
+        fail 'summary file not found'
+      end
+    end
+
     private
 
     def format_summary(xcode_summary)
