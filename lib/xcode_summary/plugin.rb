@@ -60,6 +60,7 @@ module Danger
     # @return   [Boolean]
     attr_accessor :inline_mode
 
+    # rubocop:disable Lint/DuplicateMethods
     def project_root
       root = @project_root || Dir.pwd
       root += '/' unless root.end_with? '/'
@@ -85,6 +86,7 @@ module Danger
     def inline_mode
       @inline_mode || false
     end
+    # rubocop:enable Lint/DuplicateMethods
 
     # Reads a file with JSON Xcode summary and reports it.
     #
