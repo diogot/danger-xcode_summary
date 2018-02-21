@@ -59,6 +59,12 @@ module Danger
     # @param    [Boolean] value
     # @return   [Boolean]
     attr_accessor :inline_mode
+    
+    # Defines if warnings should be included or not
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :ignores_warnings
 
     # rubocop:disable Lint/DuplicateMethods
     def project_root
@@ -85,6 +91,10 @@ module Danger
 
     def inline_mode
       @inline_mode || false
+    end
+    
+    def ignores_warnings
+      @ignores_warnings || false
     end
     # rubocop:enable Lint/DuplicateMethods
 
@@ -148,6 +158,10 @@ module Danger
     end
 
     def warnings(xcode_summary)
+      if ignores_warnings
+        return []
+      end
+      
       warnings = [
         xcode_summary.fetch(:warnings, []).map { |message| Result.new(message, nil) },
         xcode_summary.fetch(:ld_warnings, []).map { |message| Result.new(message, nil) },
