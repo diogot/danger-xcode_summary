@@ -156,7 +156,7 @@ module Danger
             expect(@dangerfile.status_report[:warnings]).to eq ['another warning']
           end
 
-          it 'report waring and error counts with no errors' do
+          it 'report warning and error counts with no errors' do
             result = @xcode_summary.warning_error_count('spec/fixtures/errors.json')
             expect(result).to eq '{"warnings":0,"errors":1}'
           end
@@ -164,6 +164,28 @@ module Danger
           it 'report waring and error counts with no warnings' do
             result = @xcode_summary.warning_error_count('spec/fixtures/ld_warnings.json')
             expect(result).to eq '{"warnings":1,"errors":0}'
+          end
+        end
+
+        context 'with ignores_warnings' do
+          before do
+            @xcode_summary.ignores_warnings = true
+          end
+
+          it 'asserts no ld warnings' do
+            @xcode_summary.report('spec/fixtures/ld_warnings.json')
+            expect(@dangerfile.status_report[:warnings]).to eq []
+          end
+
+          it 'asserts no errors' do
+            @xcode_summary.report('spec/fixtures/warnings_errors.json')
+            expect(@dangerfile.status_report[:warnings]).to eq []
+            expect(@dangerfile.status_report[:errors]).to eq ['some error', 'another error']
+          end
+
+          it 'report warning and error counts with no warning' do
+            result = @xcode_summary.warning_error_count('spec/fixtures/warnings_errors.json')
+            expect(result).to eq '{"warnings":0,"errors":2}'
           end
         end
       end
