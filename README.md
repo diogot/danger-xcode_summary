@@ -110,6 +110,12 @@ xcode_summary.ignored_results { |result|
 xcode_summary.report 'xcodebuild.json'
 ```
 
+You can use `ignores_warnings` to supress warnings and shows only errors.
+
+```ruby
+xcode_summary.ignores_warnings = true
+```
+
 You can use `inline_mode`.
 When this value is enabled, each warnings and errors are commented on each lines.
 
