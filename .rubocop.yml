@@ -12,7 +12,7 @@ Lint/UselessAssignment:
     - '**/spec/**/*'
 
 # HoundCI doesn't like this rule
-Style/DotPosition:
+Layout/DotPosition:
   Enabled: false
 
 # Cop supports --auto-correct.
