@@ -55,6 +55,7 @@ end
 def testing_bitbucket_env
   {
     'GIT_URL' => 'https://github.com/diogot/danger-xcode_summary.git',
+    'CHANGE_ID' => '4d4c0f31857e3185b51b6865a0700525bc0cb2bb',
     'JENKINS_URL' => 'http://jenkins.server.com/',
     'DANGER_BITBUCKETCLOUD_USERNAME' => 'username',
     'DANGER_BITBUCKETCLOUD_PASSWORD' => 'password'
