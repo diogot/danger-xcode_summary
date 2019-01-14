@@ -11,7 +11,7 @@ You need to use [xcpretty](https://github.com/supermarin/xcpretty) with
 [xcpretty-json-formatter](https://github.com/marcelofabri/xcpretty-json-formatter) 
 to generate a JSON file that this plugin can read.
 
-**Using [danger-swift]**? You may want to take a look at [danger-swift-xcodesummary](https://github.com/f-meloni/danger-swift-xcodesummary).
+**Using [danger-swift](https://github.com/danger/swift)**? You may want to take a look at [danger-swift-xcodesummary](https://github.com/f-meloni/danger-swift-xcodesummary).
 
 ## How does it look?
 
