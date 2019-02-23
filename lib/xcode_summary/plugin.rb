@@ -216,7 +216,11 @@ module Danger
       plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
       plugin = plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
 
-      plugin.html_link(path)
+      if plugin
+        plugin.html_link(path)
+      else
+        clean_path
+      end
     end
 
     def parse_filename(path)
