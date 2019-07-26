@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 module Danger
@@ -196,9 +198,9 @@ module Danger
       errors.delete_if(&ignored_results)
     end
 
-    def parse_location(h)
-      file_path, line, _column = h[:file_path].split(':')
-      Location.new(h[:file_name], file_path, line.to_i)
+    def parse_location(input)
+      file_path, line, _column = input[:file_path].split(':')
+      Location.new(input[:file_name], file_path, line.to_i)
     end
 
     def parse_test_location(failure)
@@ -208,27 +210,29 @@ module Danger
     end
 
     def format_path(path)
-      clean_path, line = parse_filename(path)
-      path = clean_path + '#L' + line if clean_path && line
-
       # Pick a Dangerfile plugin for a chosen request_source
       # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
       plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
       plugin = plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
 
-      plugin.html_link(path)
+      if plugin
+        clean_path, line = parse_filename(path)
+        path = clean_path + '#L' + line if clean_path && line
+        plugin.html_link(path)
+      else
+        path
+      end
     end
 
     def parse_filename(path)
       regex = /^(.*?):(\d*):?\d*$/
       match = path.match(regex)
-      if match
-        match.captures
-      end
+      match&.captures
     end
 
     def relative_path(path)
       return nil if project_root.nil?
+
       path.gsub(project_root, '')
     end
 
@@ -242,38 +246,38 @@ module Danger
       reason.gsub('>', '\>').gsub('<', '\<')
     end
 
-    def format_compile_warning(h)
-      path = relative_path(h[:file_path])
+    def format_compile_warning(input)
+      path = relative_path(input[:file_path])
       return nil if should_ignore_warning?(path)
 
       path_link = format_path(path)
 
-      warning = "**#{path_link}**: #{escape_reason(h[:reason])}  <br />"
-      if h[:line] && !h[:line].empty?
+      warning = "**#{path_link}**: #{escape_reason(input[:reason])}  <br />"
+      if input[:line] && !input[:line].empty?
         "#{warning}" \
           "```\n" \
-          "#{h[:line]}\n" \
+          "#{input[:line]}\n" \
           '```'
       else
         warning
       end
     end
 
-    def format_format_file_missing_error(h)
-      path = relative_path(h[:file_path])
+    def format_format_file_missing_error(input)
+      path = relative_path(input[:file_path])
       path_link = format_path(path)
-      "**#{escape_reason(h[:reason])}**: #{path_link}"
+      "**#{escape_reason(input[:reason])}**: #{path_link}"
     end
 
-    def format_undefined_symbols(h)
-      "#{h[:message]}  <br />" \
-        "> Symbol: #{h[:symbol]}  <br />" \
-        "> Referenced from: #{h[:reference]}"
+    def format_undefined_symbols(input)
+      "#{input[:message]}  <br />" \
+        "> Symbol: #{input[:symbol]}  <br />" \
+        "> Referenced from: #{input[:reference]}"
     end
 
-    def format_duplicate_symbols(h)
-      "#{h[:message]}  <br />" \
-        "> #{h[:file_paths].map { |path| path.split('/').last }.join('<br /> ')}"
+    def format_duplicate_symbols(input)
+      "#{input[:message]}  <br />" \
+        "> #{input[:file_paths].map { |path| path.split('/').last }.join('<br /> ')}"
     end
 
     def format_test_failure(suite_name, failure)
