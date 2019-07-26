@@ -204,9 +204,9 @@ module Danger
 
       describe 'where request source' do
         it 'should be bitbucket' do
-          path = @xcode_summary.send(:format_path, 'lib/xcode_summary/plugin.rb#L3')
+          path = @xcode_summary.send(:format_path, 'lib/xcode_summary/plugin.rb:3')
           # rubocop:disable LineLength
-          expect(path).to eq "<a href='https://github.com/diogot/danger-xcode_summary/lib/xcode_summary/plugin.rb?at=4d4c0f31857e3185b51b6865a0700525bc0cb2bb#L3'>lib/xcode_summary/plugin.rb</a>"
+          expect(path).to eq "lib/xcode_summary/plugin.rb:3"
           # rubocop:enable LineLength
         end
       end
