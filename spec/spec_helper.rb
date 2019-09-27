@@ -18,6 +18,9 @@ RSpec.configure do |config|
   config.filter_gems_from_backtrace 'bundler'
   config.color = true
   config.tty = true
+  config.expect_with :rspec do |c|
+    c.max_formatted_output_length = nil # n is number of lines, or nil for no truncation.
+  end
 end
 
 # These functions are a subset of https://github.com/danger/danger/blob/master/spec/spec_helper.rb

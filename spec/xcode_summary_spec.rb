@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/LineLength
+
 require File.expand_path('spec_helper', __dir__)
 
 module Danger
@@ -16,7 +18,7 @@ module Danger
         @dangerfile = testing_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
         @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/pr_json.json'))
-        @xcode_summary.project_root = '/Users/diogo/src/MyWeight'
+        @xcode_summary.project_root = '/Users/marcelofabri/SwiftLint/'
       end
 
       it 'sets sticky_summary to false as default' do
@@ -28,83 +30,93 @@ module Danger
       end
 
       it 'fail if file does not exist' do
-        @xcode_summary.report('spec/fixtures/inexistent_file.json')
+        @xcode_summary.report('spec/fixtures/inexistent_file.xcresult')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
       end
 
-      describe 'summary' do
-        context 'enabled' do
-          it 'formats summary messages' do
-            @xcode_summary.test_summary = true
-            @xcode_summary.report('spec/fixtures/summary_messages.json')
-            expect(@dangerfile.status_report[:messages]).to eq [
-              'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
-            ]
-          end
-        end
-
-        context 'disabled' do
-          it 'shows no summary messages' do
-            @xcode_summary.test_summary = false
-            @xcode_summary.report('spec/fixtures/summary_messages.json')
-            expect(@dangerfile.status_report[:messages]).to eq []
-          end
-        end
-
+      context 'reporting' do
         it 'formats compile warnings' do
-          @xcode_summary.report('spec/fixtures/summary.json')
+          @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable Layout/LineLength
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```",
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176'>MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176</a>**: 'NSUndefinedDateComponent' is deprecated: first deprecated in iOS 8.0 - Use NSDateComponentUndefined instead [-Wdeprecated-declarations]  <br />```\n                month_or_week = NSUndefinedDateComponent,\n```"
-            # rubocop:enable Layout/LineLength
-          ]
-        end
-
-        it 'formats compile warnings with empty line' do
-          @xcode_summary.report('spec/fixtures/summary_with_empty_line.json')
-          expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable Layout/LineLength
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001'>/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001</a>**: File should contain 400 lines or less: currently contains 10001  <br />"
-            # rubocop:enable Layout/LineLength
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L87'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L87</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L108'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L108</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L101'>Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L101</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L190'>Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L190</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L186'>Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L186</a>**: Todo Violation: TODOs should be resolved (Support `Float80`). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L138'>Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L138</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L440'>Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L440</a>**: File Line Length Violation: File should contain 400 lines or less: currently contains 441 (file_length)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L404'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L404</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L429'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L429</a>**: Todo Violation: TODOs should be resolved (Should raise error on other th...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L449'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L449</a>**: Todo Violation: TODOs should be resolved (YAML supports Hashable element...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L477'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L477</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L491'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L491</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L339'>Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L339</a>**: Todo Violation: TODOs should be resolved (Support tags). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L378'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L378</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L713'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L713</a>**: Todo Violation: TODOs should be resolved (local tag parsing). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L923'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L923</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L936'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L936</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L252'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L252</a>**: Superfluous Disable Command Violation: 'unused_private_declaration' is not a valid SwiftLint rule. Please remove it from the disable command. (superfluous_disable_command)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
           ]
         end
 
         it 'ignores file when ignored_files matches' do
-          @xcode_summary.ignored_files = '**/Pods/**'
-          @xcode_summary.report('spec/fixtures/summary.json')
+          @xcode_summary.ignored_files = 'Carthage/**/Yams/**'
+          @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable Layout/LineLength
-            "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```"
-            # rubocop:enable Layout/LineLength
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
           ]
         end
 
         it 'ignores file when ignored_files is an array and matches' do
-          @xcode_summary.ignored_files = ['**/Pods/**', '*.m']
-          @xcode_summary.report('spec/fixtures/summary.json')
-          expect(@dangerfile.status_report[:warnings]).to eq []
+          @xcode_summary.ignored_files = ['Carthage/**/Yams/**', 'Carthage/**/SWXMLHash/**']
+          @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+          expect(@dangerfile.status_report[:warnings]).to eq [
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
+          ]
         end
 
         it 'formats test errors' do
-          @xcode_summary.report('spec/fixtures/test_errors.json')
+          @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:errors]).to eq [
-            '**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  ' \
-            "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>"
+            "**SwiftLintFrameworkTests.ColonRuleTests.testColonWithoutApplyToDictionaries()**: XCTAssertEqual failed: (\"0\") is not equal to (\"1\")  <br />  <a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Tests/SwiftLintFrameworkTests/TestHelpers.swift#L168'>Tests/SwiftLintFrameworkTests/TestHelpers.swift#L168</a>"
           ]
         end
 
         it 'formats errors' do
-          @xcode_summary.report('spec/fixtures/errors.json')
+          @xcode_summary.report('spec/fixtures/build_error.xcresult')
           expect(@dangerfile.status_report[:errors]).to eq [
-            'some error',
-            'another error'
+            'Testing cancelled because the build failed.',
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L12'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L12</a>**: Use of unresolved identifier 'queue'",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L16'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L16</a>**: Use of unresolved identifier 'queue'"
           ]
         end
 
-        it 'report waring and error counts' do
-          result = @xcode_summary.warning_error_count('spec/fixtures/summary.json')
-          expect(result).to eq '{"warnings":2,"errors":0}'
+        it 'report warning and error counts' do
+          result = @xcode_summary.warning_error_count('spec/fixtures/build_error.xcresult')
+          expect(result).to eq '{"warnings":21,"errors":3}'
+        end
+
+        describe 'summary' do
+          context 'enabled' do
+            it 'formats summary messages' do
+              @xcode_summary.test_summary = true
+              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+              expect(@dangerfile.status_report[:messages]).to eq [] # not implemented yet
+            end
+          end
+
+          context 'disabled' do
+            it 'shows no summary messages' do
+              @xcode_summary.test_summary = false
+              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+              expect(@dangerfile.status_report[:messages]).to eq []
+            end
+          end
         end
 
         context 'with inline_mode' do
@@ -114,56 +126,34 @@ module Danger
 
           it 'asserts errors on the line' do
             allow(@xcode_summary).to receive(:fail)
-            @xcode_summary.report('spec/fixtures/test_errors.json')
+            @xcode_summary.report('spec/fixtures/build_error.xcresult')
             expect(@xcode_summary).to have_received(:fail).with(
               instance_of(String),
               sticky: false,
-              file: 'MyWeight/MyWeightTests/Tests.swift',
-              line: 86
+              file: 'Source/SwiftLintFramework/Extensions/QueuedPrint.swift',
+              line: 12
+            )
+            expect(@xcode_summary).to have_received(:fail).with(
+              instance_of(String),
+              sticky: false,
+              file: 'Source/SwiftLintFramework/Extensions/QueuedPrint.swift',
+              line: 16
+            )
+            expect(@xcode_summary).to have_received(:fail).with(
+              'Testing cancelled because the build failed.',
+              sticky: false
             )
           end
 
           it 'asserts warning on the line' do
             allow(@xcode_summary).to receive(:warn)
-            @xcode_summary.report('spec/fixtures/summary.json')
+            @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
             expect(@xcode_summary).to have_received(:warn).with(
               instance_of(String),
               sticky: false,
-              file: 'MyWeight/Bla.m',
-              line: 32
+              file: 'Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift',
+              line: 537
             )
-            expect(@xcode_summary).to have_received(:warn).with(
-              instance_of(String),
-              sticky: false,
-              file: 'MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m',
-              line: 176
-            )
-          end
-        end
-
-        context 'with ignored_results' do
-          before do
-            @xcode_summary.ignored_results { |result| result.message.start_with? 'some' }
-          end
-
-          it 'asserts no errors' do
-            @xcode_summary.report('spec/fixtures/errors.json')
-            expect(@dangerfile.status_report[:errors]).to eq ['another error']
-          end
-
-          it 'asserts no warnings' do
-            @xcode_summary.report('spec/fixtures/ld_warnings.json')
-            expect(@dangerfile.status_report[:warnings]).to eq ['another warning']
-          end
-
-          it 'report warning and error counts with no errors' do
-            result = @xcode_summary.warning_error_count('spec/fixtures/errors.json')
-            expect(result).to eq '{"warnings":0,"errors":1}'
-          end
-
-          it 'report waring and error counts with no warnings' do
-            result = @xcode_summary.warning_error_count('spec/fixtures/ld_warnings.json')
-            expect(result).to eq '{"warnings":1,"errors":0}'
           end
         end
 
@@ -172,20 +162,43 @@ module Danger
             @xcode_summary.ignores_warnings = true
           end
 
-          it 'asserts no ld warnings' do
-            @xcode_summary.report('spec/fixtures/ld_warnings.json')
+          it 'shows no warnings' do
+            @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
             expect(@dangerfile.status_report[:warnings]).to eq []
+          end
+
+          it 'shows errors' do
+            @xcode_summary.report('spec/fixtures/build_error.xcresult')
+            expect(@dangerfile.status_report[:warnings]).to eq []
+            expect(@dangerfile.status_report[:errors].count).to_not eq 0
+          end
+
+          it 'reports warning and error counts with no warnings' do
+            result = @xcode_summary.warning_error_count('spec/fixtures/build_error.xcresult')
+            expect(result).to eq '{"warnings":0,"errors":3}'
+          end
+        end
+
+        context 'with ignored_results' do
+          before do
+            @xcode_summary.ignored_results do |result|
+              result.message.include?('public extension') || result.message.include?('unresolved')
+            end
           end
 
           it 'asserts no errors' do
-            @xcode_summary.report('spec/fixtures/warnings_errors.json')
-            expect(@dangerfile.status_report[:warnings]).to eq []
-            expect(@dangerfile.status_report[:errors]).to eq ['some error', 'another error']
+            @xcode_summary.report('spec/fixtures/build_error.xcresult')
+            expect(@dangerfile.status_report[:errors].count).to eq 1
           end
 
-          it 'report warning and error counts with no warning' do
-            result = @xcode_summary.warning_error_count('spec/fixtures/warnings_errors.json')
-            expect(result).to eq '{"warnings":0,"errors":2}'
+          it 'asserts no warnings' do
+            @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+            expect(@dangerfile.status_report[:warnings].count).to eq 19
+          end
+
+          it 'report warning and error counts' do
+            result = @xcode_summary.warning_error_count('spec/fixtures/build_error.xcresult')
+            expect(result).to eq '{"warnings":19,"errors":1}'
           end
         end
       end
@@ -202,10 +215,11 @@ module Danger
 
       describe 'where request source' do
         it 'should be bitbucket' do
-          path = @xcode_summary.send(:format_path, 'lib/xcode_summary/plugin.rb:3')
-          expect(path).to eq 'lib/xcode_summary/plugin.rb:3'
+          path = @xcode_summary.send(:format_path, 'lib/xcode_summary/plugin.rb', 3)
+          expect(path).to eq 'lib/xcode_summary/plugin.rb'
         end
       end
     end
   end
 end
+# rubocop:enable Layout/LineLength
