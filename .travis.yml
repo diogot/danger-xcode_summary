@@ -3,6 +3,9 @@ cache:
   directories:
     - bundle
 
+os: osx
+osx_image: xcode11
+
 rvm:
   - 2.6.0
   - 2.5.3
