@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A guardfile for making Danger Plugins
 # For more info see https://github.com/guard/guard#readme
 
