@@ -131,13 +131,13 @@ module Danger
             expect(@xcode_summary).to have_received(:warn).with(
               instance_of(String),
               sticky: false,
-              file: 'Bla.m',
+              file: 'MyWeight/Bla.m',
               line: 32
             )
             expect(@xcode_summary).to have_received(:warn).with(
               instance_of(String),
               sticky: false,
-              file: 'ISO8601DateFormatter.m',
+              file: 'MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m',
               line: 176
             )
           end
