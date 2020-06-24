@@ -98,6 +98,13 @@ module Danger
     def ignores_warnings
       @ignores_warnings || false
     end
+    
+    def plugin
+      # Pick a Dangerfile plugin for a chosen request_source
+      # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
+      plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
+      @plugin ||= plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
+    end
     # rubocop:enable Lint/DuplicateMethods
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -210,11 +217,6 @@ module Danger
     end
 
     def format_path(path)
-      # Pick a Dangerfile plugin for a chosen request_source
-      # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
-      plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
-      plugin = plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
-
       if plugin
         clean_path, line = parse_filename(path)
         path = clean_path + '#L' + line if clean_path && line
