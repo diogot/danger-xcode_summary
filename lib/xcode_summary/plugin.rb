@@ -174,7 +174,7 @@ module Danger
           xcode_summary[:tests_summary_messages]
         ].flatten.uniq.compact.map(&:strip)
 
-        if collate_test_summary
+        if @collate_test_summary
           collate_xcode_test_summaries(xcode_tests_summary)
         else
           xcode_tests_summary
@@ -189,25 +189,42 @@ module Danger
     # @param    [String] The array wit the Xcode summaries
     # @return   [String] An array of string with the collated Xcode summaries
     def collate_xcode_test_summaries(xcode_tests_summary)
-      summary_regex = /Executed ([0-9]+) tests, with ([0-9]+) failures \(([0-9]+) unexpected\) in ([0-9]+\.[0-9]+) \(([0-9]+\.[0-9]+)\) seconds/
+      float_time_regex = /(\d+\.\d+) \((\d+\.\d+)\) seconds/
+      summary_regex = /Executed (\d+) tests, with (\d+) failures \((\d+) unexpected\) in #{float_time_regex}/
 
-      total_number_of_tests, total_failures, total_unexpected = 0, 0, 0
-      total_aprox_time, total_full_time = 0.0, 0.0
+      total_number_of_tests = 0
+      total_failures = 0
+      total_unexpected = 0
+      total_aprox_time = 0.0
+      total_full_time = 0.0
 
       # Collates the test results
-      xcode_tests_summary.each { |summary| 
-        if match = summary.match(summary_regex)
-          number_of_tests, failures, unexpected, aprox_time, full_time = match.captures
+      xcode_tests_summary.each do |summary|
+        match = summary.match(summary_regex)
+        next if match.nil?
 
-          total_number_of_tests += number_of_tests.to_i
-          total_failures += failures.to_i
-          total_unexpected += unexpected.to_i
-          total_aprox_time += aprox_time.to_f
-          total_full_time += full_time.to_f
-        end 
-      }
+        number_of_tests, failures, unexpected, aprox_time, full_time = match.captures
 
-      ["\t Executed #{total_number_of_tests} tests, with #{total_failures} failures (#{total_unexpected} unexpected) in %.3f (%.3f) seconds\n" % [total_aprox_time, total_full_time]]
+        total_number_of_tests += number_of_tests.to_i
+        total_failures += failures.to_i
+        total_unexpected += unexpected.to_i
+        total_aprox_time += aprox_time.to_f
+        total_full_time += full_time.to_f
+      end
+
+      format_string = 'Executed %<total_number_of_tests>d tests, with %<total_failures>d failures ' \
+                      '(%<total_unexpected>d unexpected) in %<total_aprox_time>.3f (%<total_full_time>.3f) seconds'
+
+      [
+        format(
+          format_string,
+          total_number_of_tests: total_number_of_tests,
+          total_failures: total_failures,
+          total_unexpected: total_unexpected,
+          total_aprox_time: total_aprox_time,
+          total_full_time: total_full_time
+        )
+      ]
     end
 
     def warnings(xcode_summary)

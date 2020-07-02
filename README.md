@@ -126,10 +126,16 @@ xcode_summary.inline_mode = true
 xcode_summary.report 'xcodebuild.json'
 ```
 
-You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g {"warnings":1,"errors":3}:
+You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g `{"warnings":1,"errors":3}`:
 
 ```ruby
 result = xcode_summary.warning_error_count 'xcodebuild.json'
+```
+
+You can use `collate_test_summary` if you're running a test suite with several test schemes associated, and you want to collate the test results summaries into one.:
+
+```ruby
+xcode_summary.collate_test_summary = true
 ```
 
 ## License
