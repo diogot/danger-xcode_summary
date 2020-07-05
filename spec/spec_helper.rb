@@ -60,7 +60,9 @@ def testing_bitbucket_env
     'CHANGE_ID' => '4d4c0f31857e3185b51b6865a0700525bc0cb2bb',
     'JENKINS_URL' => 'http://jenkins.server.com/',
     'DANGER_BITBUCKETCLOUD_USERNAME' => 'username',
-    'DANGER_BITBUCKETCLOUD_PASSWORD' => 'password'
+    'DANGER_BITBUCKETCLOUD_PASSWORD' => 'password',
+    'DANGER_BITBUCKETCLOUD_UUID' => 'c91be865-efc6-49a6-93c5-24e1267c479b',
+    'ghprbPullId' => '2080'
   }
 end
 
