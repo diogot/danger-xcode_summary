@@ -98,10 +98,10 @@ module Danger
     def ignores_warnings
       @ignores_warnings || false
     end
-    
+
+    # Pick a Dangerfile plugin for a chosen request_source and cache it
+    # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
     def plugin
-      # Pick a Dangerfile plugin for a chosen request_source
-      # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
       plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
       @plugin ||= plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
     end

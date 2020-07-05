@@ -54,19 +54,19 @@ module Danger
         it 'formats compile warnings' do
           @xcode_summary.report('spec/fixtures/summary.json')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable LineLength
+            # rubocop:disable Layout/LineLength
             "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```",
             "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176'>MyWeight/Pods/ISO8601DateFormatter/ISO8601DateFormatter.m#L176</a>**: 'NSUndefinedDateComponent' is deprecated: first deprecated in iOS 8.0 - Use NSDateComponentUndefined instead [-Wdeprecated-declarations]  <br />```\n                month_or_week = NSUndefinedDateComponent,\n```"
-            # rubocop:enable LineLength
+            # rubocop:enable Layout/LineLength
           ]
         end
 
         it 'formats compile warnings with empty line' do
           @xcode_summary.report('spec/fixtures/summary_with_empty_line.json')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable LineLength
+            # rubocop:disable Layout/LineLength
             "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001'>/Users/marcelofabri/Developer/MyAwesomeProject/MyAwesomeProject/Classes/AppDelegate.swift#L10001</a>**: File should contain 400 lines or less: currently contains 10001  <br />"
-            # rubocop:enable LineLength
+            # rubocop:enable Layout/LineLength
           ]
         end
 
@@ -74,9 +74,9 @@ module Danger
           @xcode_summary.ignored_files = '**/Pods/**'
           @xcode_summary.report('spec/fixtures/summary.json')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            # rubocop:disable LineLength
+            # rubocop:disable Layout/LineLength
             "**<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/Bla.m#L32'>MyWeight/Bla.m#L32</a>**: Value stored to 'theme' is never read  <br />```\n            theme = *ptr++;\n```"
-            # rubocop:enable LineLength
+            # rubocop:enable Layout/LineLength
           ]
         end
 
@@ -89,10 +89,10 @@ module Danger
         it 'formats test errors' do
           @xcode_summary.report('spec/fixtures/test_errors.json')
           expect(@dangerfile.status_report[:errors]).to eq [
-            # rubocop:disable LineLength
+            # rubocop:disable Layout/LineLength
             '**MyWeight.MyWeightSpec**: works_with_success, expected to eventually not be nil, got \<nil\>  <br />  ' \
             "<a href='https://github.com/diogot/danger-xcode_summary/blob/129jef029jf029fj2039fj203f92/MyWeight/MyWeightTests/Tests.swift#L86'>MyWeight/MyWeightTests/Tests.swift#L86</a>"
-            # rubocop:enable LineLength
+            # rubocop:enable Layout/LineLength
           ]
         end
 
@@ -198,9 +198,7 @@ module Danger
       before do
         @dangerfile = testing_bitbucket_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
-        # rubocop:disable LineLength
         @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/bitbucket_pr.json'), symbolize_names: true)
-        # rubocop:enable LineLength
         @xcode_summary.project_root = '/Users/diogo/src/danger-xcode_summary'
       end
 
