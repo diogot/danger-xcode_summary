@@ -207,7 +207,8 @@ module Danger
 
     def parse_location(input)
       file_path, line, _column = input[:file_path].split(':')
-      Location.new(input[:file_name], file_path, line.to_i)
+      file_name = relative_path(file_path)
+      Location.new(file_name, file_path, line.to_i)
     end
 
     def parse_test_location(failure)
