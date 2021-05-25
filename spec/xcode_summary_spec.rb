@@ -27,6 +27,10 @@ module Danger
         expect(@xcode_summary.test_summary).to eq true
       end
 
+      it 'sets collate_test_summary to false as default' do
+        expect(@xcode_summary.collate_test_summary).to eq false
+      end
+
       it 'fail if file does not exist' do
         @xcode_summary.report('spec/fixtures/inexistent_file.json')
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
@@ -39,6 +43,28 @@ module Danger
             @xcode_summary.report('spec/fixtures/summary_messages.json')
             expect(@dangerfile.status_report[:messages]).to eq [
               'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
+            ]
+          end
+
+          it 'formats summary messages without collating' do
+            @xcode_summary.test_summary = true
+            @xcode_summary.report('spec/fixtures/summary_messages_with_several.json')
+            expect(@dangerfile.status_report[:messages]).to eq [
+              'Executed 615 tests, with 0 failures (0 unexpected) in 16.162 (16.599) seconds',
+              'Executed 157 tests, with 0 failures (0 unexpected) in 2.819 (2.921) seconds',
+              'Executed 87 tests, with 0 failures (0 unexpected) in 1.096 (1.139) seconds',
+              'Executed 172 tests, with 0 failures (0 unexpected) in 5.430 (5.528) seconds',
+              'Executed 62 tests, with 0 failures (0 unexpected) in 0.526 (0.569) seconds',
+              'Executed 4 tests, with 0 failures (0 unexpected) in 0.012 (0.017) seconds'
+            ]
+          end
+
+          it 'formats summary messages collating it' do
+            @xcode_summary.test_summary = true
+            @xcode_summary.collate_test_summary = true
+            @xcode_summary.report('spec/fixtures/summary_messages_with_several.json')
+            expect(@dangerfile.status_report[:messages]).to eq [
+              'Executed 1097 tests, with 0 failures (0 unexpected) in 26.045 (26.773) seconds'
             ]
           end
         end

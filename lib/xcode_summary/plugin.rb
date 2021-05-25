@@ -68,6 +68,13 @@ module Danger
     # @return   [Boolean]
     attr_accessor :ignores_warnings
 
+    # Defines if in a project with several tests suites
+    # should collate the final tests_summary in a single one
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :collate_test_summary
+
     # rubocop:disable Lint/DuplicateMethods
     def project_root
       root = @project_root || Dir.pwd
@@ -99,12 +106,17 @@ module Danger
       @ignores_warnings || false
     end
 
+    def collate_test_summary
+      @collate_test_summary || false
+    end
+
     # Pick a Dangerfile plugin for a chosen request_source and cache it
     # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
     def plugin
       plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
       @plugin ||= plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
     end
+
     # rubocop:enable Lint/DuplicateMethods
 
     # Reads a file with JSON Xcode summary and reports it.
@@ -160,12 +172,61 @@ module Danger
 
     def messages(xcode_summary)
       if test_summary
-        [
+        xcode_tests_summary = [
           xcode_summary[:tests_summary_messages]
         ].flatten.uniq.compact.map(&:strip)
+
+        if @collate_test_summary
+          collate_xcode_test_summaries(xcode_tests_summary)
+        else
+          xcode_tests_summary
+        end
       else
         []
       end
+    end
+
+    # Collates the Xcode summaries reported
+    #
+    # @param    [String] The array wit the Xcode summaries
+    # @return   [String] An array of string with the collated Xcode summaries
+    def collate_xcode_test_summaries(xcode_tests_summary)
+      float_time_regex = /(\d+\.\d+) \((\d+\.\d+)\) seconds/
+      summary_regex = /Executed (\d+) tests, with (\d+) failures \((\d+) unexpected\) in #{float_time_regex}/
+
+      total_number_of_tests = 0
+      total_failures = 0
+      total_unexpected = 0
+      total_aprox_time = 0.0
+      total_full_time = 0.0
+
+      # Collates the test results
+      xcode_tests_summary.each do |summary|
+        match = summary.match(summary_regex)
+        next if match.nil?
+
+        number_of_tests, failures, unexpected, aprox_time, full_time = match.captures
+
+        total_number_of_tests += number_of_tests.to_i
+        total_failures += failures.to_i
+        total_unexpected += unexpected.to_i
+        total_aprox_time += aprox_time.to_f
+        total_full_time += full_time.to_f
+      end
+
+      format_string = 'Executed %<total_number_of_tests>d tests, with %<total_failures>d failures ' \
+                      '(%<total_unexpected>d unexpected) in %<total_aprox_time>.3f (%<total_full_time>.3f) seconds'
+
+      [
+        format(
+          format_string,
+          total_number_of_tests: total_number_of_tests,
+          total_failures: total_failures,
+          total_unexpected: total_unexpected,
+          total_aprox_time: total_aprox_time,
+          total_full_time: total_full_time
+        )
+      ]
     end
 
     def warnings(xcode_summary)
