@@ -147,6 +147,7 @@ module Danger
           warn(result.message, sticky: false)
         end
       end
+      # rubocop:disable Lint/UnreachableLoop
       errors(xcode_summary).each do |result|
         if inline_mode && result.location
           fail(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
@@ -154,6 +155,7 @@ module Danger
           fail(result.message, sticky: false)
         end
       end
+      # rubocop:enable Lint/UnreachableLoop
     end
 
     def messages(xcode_summary)
@@ -220,7 +222,7 @@ module Danger
     def format_path(path)
       if plugin
         clean_path, line = parse_filename(path)
-        path = clean_path + '#L' + line if clean_path && line
+        path = "#{clean_path}#L#{line}" if clean_path && line
         plugin.html_link(path)
       else
         path
