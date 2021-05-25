@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-xcode_summary (0.5.2)
+    danger-xcode_summary (0.5.3)
       danger-plugin-api (~> 1.0)
 
 GEM
