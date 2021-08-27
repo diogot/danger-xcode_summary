@@ -38,27 +38,27 @@ module Danger
         it 'formats compile warnings' do
           @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L87'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L87</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L108'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L108</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L101'>Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L101</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L190'>Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L190</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L186'>Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L186</a>**: Todo Violation: TODOs should be resolved (Support `Float80`). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L138'>Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L138</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L440'>Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L440</a>**: File Line Length Violation: File should contain 400 lines or less: currently contains 441 (file_length)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L404'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L404</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L429'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L429</a>**: Todo Violation: TODOs should be resolved (Should raise error on other th...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L449'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L449</a>**: Todo Violation: TODOs should be resolved (YAML supports Hashable element...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L477'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L477</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L491'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L491</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L339'>Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L339</a>**: Todo Violation: TODOs should be resolved (Support tags). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L378'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L378</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L713'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L713</a>**: Todo Violation: TODOs should be resolved (local tag parsing). (todo)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L923'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L923</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L936'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L936</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L252'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L252</a>**: Superfluous Disable Command Violation: 'unused_private_declaration' is not a valid SwiftLint rule. Please remove it from the disable command. (superfluous_disable_command)",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537</a>**: 'public' modifier is redundant for instance method declared in a public extension",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551</a>**: 'public' modifier is redundant for instance method declared in a public extension",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L88'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L88</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L109'>Carthage/Checkouts/Yams/Sources/Yams/Tag.swift#L109</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L102'>Carthage/Checkouts/Yams/Sources/Yams/Decoder.swift#L102</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L191'>Carthage/Checkouts/Yams/Sources/Yams/Node.swift#L191</a>**: Legacy Hashing Violation: Prefer using the `hash(into:)` function instead of overriding `hashValue` (legacy_hashing)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L187'>Carthage/Checkouts/Yams/Sources/Yams/Representer.swift#L187</a>**: Todo Violation: TODOs should be resolved (Support `Float80`). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L139'>Carthage/Checkouts/Yams/Sources/Yams/Encoder.swift#L139</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L441'>Carthage/Checkouts/Yams/Sources/Yams/Parser.swift#L441</a>**: File Line Length Violation: File should contain 400 lines or less: currently contains 441 (file_length)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L405'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L405</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L430'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L430</a>**: Todo Violation: TODOs should be resolved (Should raise error on other th...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L450'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L450</a>**: Todo Violation: TODOs should be resolved (YAML supports Hashable element...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L478'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L478</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L492'>Carthage/Checkouts/Yams/Sources/Yams/Constructor.swift#L492</a>**: Todo Violation: TODOs should be resolved (Should raise error if subnode ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L340'>Carthage/Checkouts/Yams/Sources/Yams/Emitter.swift#L340</a>**: Todo Violation: TODOs should be resolved (Support tags). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L379'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L379</a>**: Todo Violation: TODOs should be resolved (YAML supports keys other than ...). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L714'>Carthage/Checkouts/Yams/Tests/YamsTests/SpecTests.swift#L714</a>**: Todo Violation: TODOs should be resolved (local tag parsing). (todo)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L924'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L924</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L937'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L937</a>**: Colon Violation: Colons should be next to the identifier when specifying a type and next to the key in dictionary literals. (colon)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L253'>Carthage/Checkouts/Yams/Tests/YamsTests/EncoderTests.swift#L253</a>**: Superfluous Disable Command Violation: 'unused_private_declaration' is not a valid SwiftLint rule. Please remove it from the disable command. (superfluous_disable_command)",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L538'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L538</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L552'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L552</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L8'>Carthage/Checkouts/Result/Result/NoError.swift#L8</a>**: Will never be executed"
           ]
         end
 
@@ -66,9 +66,9 @@ module Danger
           @xcode_summary.ignored_files = 'Carthage/**/Yams/**'
           @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L537</a>**: 'public' modifier is redundant for instance method declared in a public extension",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L551</a>**: 'public' modifier is redundant for instance method declared in a public extension",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L538'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L538</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L552'>Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift#L552</a>**: 'public' modifier is redundant for instance method declared in a public extension",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L8'>Carthage/Checkouts/Result/Result/NoError.swift#L8</a>**: Will never be executed"
           ]
         end
 
@@ -76,14 +76,14 @@ module Danger
           @xcode_summary.ignored_files = ['Carthage/**/Yams/**', 'Carthage/**/SWXMLHash/**']
           @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:warnings]).to eq [
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L7'>Carthage/Checkouts/Result/Result/NoError.swift#L7</a>**: Will never be executed"
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Carthage/Checkouts/Result/Result/NoError.swift#L8'>Carthage/Checkouts/Result/Result/NoError.swift#L8</a>**: Will never be executed"
           ]
         end
 
         it 'formats test errors' do
           @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
           expect(@dangerfile.status_report[:errors]).to eq [
-            "**SwiftLintFrameworkTests.ColonRuleTests.testColonWithoutApplyToDictionaries()**: XCTAssertEqual failed: (\"0\") is not equal to (\"1\")  <br />  <a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Tests/SwiftLintFrameworkTests/TestHelpers.swift#L168'>Tests/SwiftLintFrameworkTests/TestHelpers.swift#L168</a>"
+            "**SwiftLintFrameworkTests.ColonRuleTests.testColonWithoutApplyToDictionaries()**: XCTAssertEqual failed: (\"0\") is not equal to (\"1\")  <br />  <a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Tests/SwiftLintFrameworkTests/TestHelpers.swift#L169'>Tests/SwiftLintFrameworkTests/TestHelpers.swift#L169</a>"
           ]
         end
 
@@ -91,8 +91,8 @@ module Danger
           @xcode_summary.report('spec/fixtures/build_error.xcresult')
           expect(@dangerfile.status_report[:errors]).to eq [
             'Testing cancelled because the build failed.',
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L12'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L12</a>**: Use of unresolved identifier 'queue'",
-            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L16'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L16</a>**: Use of unresolved identifier 'queue'"
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L13'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L13</a>**: Use of unresolved identifier 'queue'",
+            "**<a href='https://github.com/realm/SwiftLint/blob/f211694e7def13785ff62047386437534541d7b3/Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L17'>Source/SwiftLintFramework/Extensions/QueuedPrint.swift#L17</a>**: Use of unresolved identifier 'queue'"
           ]
         end
 
@@ -131,13 +131,13 @@ module Danger
               instance_of(String),
               sticky: false,
               file: 'Source/SwiftLintFramework/Extensions/QueuedPrint.swift',
-              line: 12
+              line: 13
             )
             expect(@xcode_summary).to have_received(:fail).with(
               instance_of(String),
               sticky: false,
               file: 'Source/SwiftLintFramework/Extensions/QueuedPrint.swift',
-              line: 16
+              line: 17
             )
             expect(@xcode_summary).to have_received(:fail).with(
               'Testing cancelled because the build failed.',
@@ -152,7 +152,7 @@ module Danger
               instance_of(String),
               sticky: false,
               file: 'Carthage/Checkouts/SWXMLHash/Source/XMLIndexer+XMLIndexerDeserializable.swift',
-              line: 537
+              line: 538
             )
           end
         end
