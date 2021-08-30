@@ -1,6 +1,6 @@
-# coding: utf-8
+# frozen_string_literal: true
 
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'xcode_summary/gem_version.rb'
@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.4.0"
 
+  spec.add_dependency 'xcresult', '~> 0.2'
   spec.add_runtime_dependency 'danger-plugin-api', '~> 1.0'
 
   # General ruby development

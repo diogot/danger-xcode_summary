@@ -6,12 +6,6 @@
 
 A [Danger](http://danger.systems) plugin that shows all build errors, warnings and unit tests results generated from `xcodebuild`.
 
-You need to use [xcpretty](https://github.com/supermarin/xcpretty) with 
-[xcpretty-json-formatter](https://github.com/marcelofabri/xcpretty-json-formatter) 
-to generate a JSON file that this plugin can read.
-
-**Using [danger-swift](https://github.com/danger/swift)**? You may want to take a look at [danger-swift-xcodesummary](https://github.com/f-meloni/danger-swift-xcodesummary).
-
 ## How does it look?
 
 <table>
@@ -62,24 +56,6 @@ to generate a JSON file that this plugin can read.
   </tbody>
 </table>
 
-<table>
-  <thead>
-    <tr>
-      <th width="50"></th>
-      <th width="100%">
-          1 Message
-      </th>
-     </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><g-emoji alias="book" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4d6.png">📖</g-emoji></td>
-      <td>Executed 5 tests, with 1 failure (0 unexpected) in 0.032 (0.065) seconds</td>
-    </tr>
-      </tr>
-  </tbody>
-</table>
-
 ## Installation
 
 Add this line to your Gemfile:
@@ -93,8 +69,12 @@ gem 'danger-xcode_summary'
 Just add this line to your `Dangerfile`:
 
 ```ruby
-xcode_summary.report 'xcodebuild.json'
+xcode_summary.report 'MyApp.xcresult'
 ```
+
+You need to pass the path of the `xcresult` generated after compiling your app.
+By default, this is inside the `DerivedData` for your project, but you can use the `-resultBundlePath`
+flag when calling `xcodebuild` to customize its path. You can read more about it in this [blog post from the folks at PSPDFKit](https://pspdfkit.com/blog/2021/deflaking-ci-tests-with-xcresults/#using-xcresult-bundles).
 
 You can also ignore warnings from certain files by setting `ignored_files`: 
 Warning: `ignored_files` patterns applied on relative paths.  
@@ -105,10 +85,10 @@ xcode_summary.ignored_files = 'Pods/**'
 
 # Ignoring specific warnings
 xcode_summary.ignored_results { |result|
-  result.message.start_with? 'ld' # Ignore ld_warnings
+  result.message.include? 'ld' # Ignore ld_warnings
 }
 
-xcode_summary.report 'xcodebuild.json'
+xcode_summary.report 'MyApp.xcresult'
 ```
 
 You can use `ignores_warnings` to supress warnings and shows only errors.
@@ -123,13 +103,13 @@ When this value is enabled, each warnings and errors are commented on each lines
 ```ruby
 # Comment on each lines
 xcode_summary.inline_mode = true
-xcode_summary.report 'xcodebuild.json'
+xcode_summary.report 'MyApp.xcresult'
 ```
 
-You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g {"warnings":1,"errors":3}:
+You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g `{"warnings":1,"errors":3}`:
 
 ```ruby
-result = xcode_summary.warning_error_count 'xcodebuild.json'
+result = xcode_summary.warning_error_count 'MyApp.xcresult'
 ```
 
 ## License

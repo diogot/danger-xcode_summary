@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'xcresult'
 
 module Danger
   # Shows all build errors, warnings and unit tests results generated from `xcodebuild`.
-  # You need to use [xcpretty](https://github.com/supermarin/xcpretty)
-  # with [xcpretty-json-formatter](https://github.com/marcelofabri/xcpretty-json-formatter)
-  # to generate a JSON file that this plugin can read.
+  # You need to use the `xcresult` produced by Xcode 11. It's located in the Derived Data folder.
   # @example Showing summary
   #
-  #          xcode_summary.report 'xcodebuild.json'
+  #          xcode_summary.report 'build.xcresult'
   #
   # @example Filtering warnings in Pods
   #
   #          xcode_summary.ignored_files = '**/Pods/**'
-  #          xcode_summary.report 'xcodebuild.json'
+  #          xcode_summary.report 'build.xcresult'
   #
   # @see  diogot/danger-xcode_summary
   # @tags xcode, xcodebuild, format
@@ -44,18 +43,6 @@ module Danger
     # @return   [Block]
     attr_accessor :ignored_results
 
-    # Defines if the test summary will be sticky or not.
-    # Defaults to `false`.
-    # @param    [Boolean] value
-    # @return   [Boolean]
-    attr_accessor :sticky_summary
-
-    # Defines if the build summary is shown or not.
-    # Defaults to `true`.
-    # @param    [Boolean] value
-    # @return   [Boolean]
-    attr_accessor :test_summary
-
     # Defines if using inline comment or not.
     # Defaults to `false`.
     # @param    [Boolean] value
@@ -83,14 +70,6 @@ module Danger
       @ignored_results ||= block
     end
 
-    def sticky_summary
-      @sticky_summary || false
-    end
-
-    def test_summary
-      @test_summary.nil? ? true : @test_summary
-    end
-
     def inline_mode
       @inline_mode || false
     end
@@ -107,28 +86,32 @@ module Danger
     end
     # rubocop:enable Lint/DuplicateMethods
 
-    # Reads a file with JSON Xcode summary and reports it.
+    # Reads a `.xcresult` and reports it.
     #
-    # @param    [String] file_path Path for Xcode summary in JSON format.
+    # @param    [String] file_path Path for xcresult bundle.
     # @return   [void]
     def report(file_path)
-      if File.file?(file_path)
-        xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
+      if File.exist?(file_path)
+        xcode_summary = XCResult::Parser.new(path: file_path)
         format_summary(xcode_summary)
       else
         fail 'summary file not found'
       end
     end
 
-    # Reads a file with JSON Xcode summary and reports its warning and error count.
+    # Reads a `.xcresult` and reports its warning and error count.
     #
-    # @param    [String] file_path Path for Xcode summary in JSON format.
+    # @param    [String] file_path Path for xcresult bundle.
     # @return   [String] JSON string with warningCount and errorCount
     def warning_error_count(file_path)
-      if File.file?(file_path)
-        xcode_summary = JSON.parse(File.read(file_path), symbolize_names: true)
-        warning_count = warnings(xcode_summary).count
-        error_count = errors(xcode_summary).count
+      if File.exist?(file_path)
+        xcode_summary = XCResult::Parser.new(path: file_path)
+        warning_count = 0
+        error_count = 0
+        xcode_summary.actions_invocation_record.actions.each do |action|
+          warning_count += warnings(action).count
+          error_count += errors(action).count
+        end
         result = { warnings: warning_count, errors: error_count }
         result.to_json
       else
@@ -139,100 +122,81 @@ module Danger
     private
 
     def format_summary(xcode_summary)
-      messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
-      warnings(xcode_summary).each do |result|
-        if inline_mode && result.location
-          warn(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
-        else
-          warn(result.message, sticky: false)
+      xcode_summary.actions_invocation_record.actions.each do |action|
+        warnings(action).each do |result|
+          if inline_mode && result.location
+            warn(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+          else
+            warn(result.message, sticky: false)
+          end
         end
-      end
-      # rubocop:disable Lint/UnreachableLoop
-      errors(xcode_summary).each do |result|
-        if inline_mode && result.location
-          fail(result.message, sticky: false, file: result.location.file_name, line: result.location.line)
-        else
-          fail(result.message, sticky: false)
+        # rubocop:disable Lint/UnreachableLoop
+        errors(action).each do |result|
+          if inline_mode && result.location
+            fail(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+          else
+            fail(result.message, sticky: false)
+          end
         end
-      end
-      # rubocop:enable Lint/UnreachableLoop
-    end
-
-    def messages(xcode_summary)
-      if test_summary
-        [
-          xcode_summary[:tests_summary_messages]
-        ].flatten.uniq.compact.map(&:strip)
-      else
-        []
+        # rubocop:enable Lint/UnreachableLoop
       end
     end
 
-    def warnings(xcode_summary)
-      if ignores_warnings
-        return []
-      end
+    def warnings(action)
+      return [] if ignores_warnings
 
       warnings = [
-        xcode_summary.fetch(:warnings, []).map { |message| Result.new(message, nil) },
-        xcode_summary.fetch(:ld_warnings, []).map { |message| Result.new(message, nil) },
-        xcode_summary.fetch(:compile_warnings, {}).map do |h|
-          Result.new(format_compile_warning(h), parse_location(h))
-        end
-      ].flatten.uniq.compact.reject { |result| result.message.nil? }
+        action.action_result.issues.warning_summaries,
+        action.build_result.issues.warning_summaries
+      ].flatten.compact.map do |summary|
+        result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
+        Result.new(format_warning(result), result.location)
+      end
+      warnings = warnings.uniq.reject { |result| result.message.nil? }
       warnings.delete_if(&ignored_results)
     end
 
-    def errors(xcode_summary)
+    def errors(action)
       errors = [
-        xcode_summary.fetch(:errors, []).map { |message| Result.new(message, nil) },
-        xcode_summary.fetch(:compile_errors, {}).map do |h|
-          Result.new(format_compile_warning(h), parse_location(h))
-        end,
-        xcode_summary.fetch(:file_missing_errors, {}).map do |h|
-          Result.new(format_format_file_missing_error(h), parse_location(h))
-        end,
-        xcode_summary.fetch(:undefined_symbols_errors, {}).map do |h|
-          Result.new(format_undefined_symbols(h), nil)
-        end,
-        xcode_summary.fetch(:duplicate_symbols_errors, {}).map do |h|
-          Result.new(format_duplicate_symbols(h), nil)
-        end,
-        xcode_summary.fetch(:tests_failures, {}).map do |test_suite, failures|
-          failures.map do |failure|
-            Result.new(format_test_failure(test_suite, failure), parse_test_location(failure))
-          end
-        end
-      ].flatten.uniq.compact.reject { |result| result.message.nil? }
-      errors.delete_if(&ignored_results)
+        action.action_result.issues.error_summaries,
+        action.build_result.issues.error_summaries
+      ].flatten.compact.map do |summary|
+        result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
+        Result.new(format_warning(result), result.location)
+      end
+
+      test_failures = [
+        action.action_result.issues.test_failure_summaries,
+        action.build_result.issues.test_failure_summaries
+      ].flatten.compact.map do |summary|
+        result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
+        Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
+                   result.location)
+      end
+
+      results = (errors + test_failures).uniq.reject { |result| result.message.nil? }
+      results.delete_if(&ignored_results)
     end
 
-    def parse_location(input)
-      file_path, line, _column = input[:file_path].split(':')
-      file_name = relative_path(file_path)
-      Location.new(file_name, file_path, line.to_i)
+    def parse_location(document_location)
+      return nil if document_location.nil?
+
+      file_path = document_location.url.gsub('file://', '').split('#').first
+      file_name = file_path.split('/').last
+      fragment = document_location.url.split('#').last
+      params = CGI.parse(fragment).transform_values(&:first)
+      line = params['StartingLineNumber'].to_i + 1 # StartingLineNumber is 0-based, but we need a 1-based value
+      Location.new(file_name, relative_path(file_path), line)
     end
 
-    def parse_test_location(failure)
-      path, line = failure[:file_path].split(':')
-      file_name = relative_path(path)
-      Location.new(file_name, path, line.to_i)
-    end
-
-    def format_path(path)
+    def format_path(file_path, line)
       if plugin
-        clean_path, line = parse_filename(path)
-        path = "#{clean_path}#L#{line}" if clean_path && line
+        path = file_path
+        path += "#L#{line}" if line
         plugin.html_link(path)
       else
-        path
+        file_path
       end
-    end
-
-    def parse_filename(path)
-      regex = /^(.*?):(\d*):?\d*$/
-      match = path.match(regex)
-      match&.captures
     end
 
     def relative_path(path)
@@ -242,8 +206,6 @@ module Danger
     end
 
     def should_ignore_warning?(path)
-      parsed = parse_filename(path)
-      path = parsed.first || path
       ignored_files.any? { |pattern| File.fnmatch(pattern, path) }
     end
 
@@ -251,44 +213,22 @@ module Danger
       reason.gsub('>', '\>').gsub('<', '\<')
     end
 
-    def format_compile_warning(input)
-      path = relative_path(input[:file_path])
+    def format_warning(result)
+      return escape_reason(result.message) if result.location.nil?
+
+      path = result.location.file_path
       return nil if should_ignore_warning?(path)
 
-      path_link = format_path(path)
+      path_link = format_path(path, result.location.line)
 
-      warning = "**#{path_link}**: #{escape_reason(input[:reason])}  <br />"
-      if input[:line] && !input[:line].empty?
-        "#{warning}" \
-          "```\n" \
-          "#{input[:line]}\n" \
-          '```'
-      else
-        warning
-      end
+      "**#{path_link}**: #{escape_reason(result.message)}"
     end
 
-    def format_format_file_missing_error(input)
-      path = relative_path(input[:file_path])
-      path_link = format_path(path)
-      "**#{escape_reason(input[:reason])}**: #{path_link}"
-    end
-
-    def format_undefined_symbols(input)
-      "#{input[:message]}  <br />" \
-        "> Symbol: #{input[:symbol]}  <br />" \
-        "> Referenced from: #{input[:reference]}"
-    end
-
-    def format_duplicate_symbols(input)
-      "#{input[:message]}  <br />" \
-        "> #{input[:file_paths].map { |path| path.split('/').last }.join('<br /> ')}"
-    end
-
-    def format_test_failure(suite_name, failure)
-      path = relative_path(failure[:file_path])
-      path_link = format_path(path)
-      "**#{suite_name}**: #{failure[:test_case]}, #{escape_reason(failure[:reason])}  <br />  #{path_link}"
+    def format_test_failure(result, producing_target, test_case_name)
+      path = result.location.file_path
+      path_link = format_path(path, result.location.line)
+      suite_name = "#{producing_target}.#{test_case_name}"
+      "**#{suite_name}**: #{escape_reason(result.message)}  <br />  #{path_link}"
     end
   end
 end
