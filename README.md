@@ -106,7 +106,7 @@ xcode_summary.inline_mode = true
 xcode_summary.report 'MyApp.xcresult'
 ```
 
-You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g {"warnings":1,"errors":3}:
+You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g `{"warnings":1,"errors":3}`:
 
 ```ruby
 result = xcode_summary.warning_error_count 'MyApp.xcresult'
