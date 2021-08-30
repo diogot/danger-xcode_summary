@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-xcode_summary (0.5.3)
+    danger-xcode_summary (1.0.0)
       danger-plugin-api (~> 1.0)
       xcresult (~> 0.2)
 
