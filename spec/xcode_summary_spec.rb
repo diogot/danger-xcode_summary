@@ -10,23 +10,12 @@ module Danger
       expect(Danger::DangerXcodeSummary.new(nil)).to be_a Danger::Plugin
     end
 
-    #
-    # You should test your custom attributes and methods here
-    #
     describe 'with Dangerfile' do
       before do
         @dangerfile = testing_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
         @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/pr_json.json'))
         @xcode_summary.project_root = '/Users/marcelofabri/SwiftLint/'
-      end
-
-      it 'sets sticky_summary to false as default' do
-        expect(@xcode_summary.sticky_summary).to eq false
-      end
-
-      it 'sets test_summary to true as default' do
-        expect(@xcode_summary.test_summary).to eq true
       end
 
       it 'fail if file does not exist' do
@@ -99,24 +88,6 @@ module Danger
         it 'report warning and error counts' do
           result = @xcode_summary.warning_error_count('spec/fixtures/build_error.xcresult')
           expect(result).to eq '{"warnings":21,"errors":3}'
-        end
-
-        describe 'summary' do
-          context 'enabled' do
-            it 'formats summary messages' do
-              @xcode_summary.test_summary = true
-              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
-              expect(@dangerfile.status_report[:messages]).to eq [] # not implemented yet
-            end
-          end
-
-          context 'disabled' do
-            it 'shows no summary messages' do
-              @xcode_summary.test_summary = false
-              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
-              expect(@dangerfile.status_report[:messages]).to eq []
-            end
-          end
         end
 
         context 'with inline_mode' do

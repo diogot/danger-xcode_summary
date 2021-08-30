@@ -43,18 +43,6 @@ module Danger
     # @return   [Block]
     attr_accessor :ignored_results
 
-    # Defines if the test summary will be sticky or not.
-    # Defaults to `false`.
-    # @param    [Boolean] value
-    # @return   [Boolean]
-    attr_accessor :sticky_summary
-
-    # Defines if the build summary is shown or not.
-    # Defaults to `true`.
-    # @param    [Boolean] value
-    # @return   [Boolean]
-    attr_accessor :test_summary
-
     # Defines if using inline comment or not.
     # Defaults to `false`.
     # @param    [Boolean] value
@@ -80,14 +68,6 @@ module Danger
 
     def ignored_results(&block)
       @ignored_results ||= block
-    end
-
-    def sticky_summary
-      @sticky_summary || false
-    end
-
-    def test_summary
-      @test_summary.nil? ? true : @test_summary
     end
 
     def inline_mode
@@ -143,7 +123,6 @@ module Danger
 
     def format_summary(xcode_summary)
       xcode_summary.actions_invocation_record.actions.each do |action|
-        messages(action).each { |s| message(s, sticky: sticky_summary) }
         warnings(action).each do |result|
           if inline_mode && result.location
             warn(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
@@ -161,10 +140,6 @@ module Danger
         end
         # rubocop:enable Lint/UnreachableLoop
       end
-    end
-
-    def messages(_action)
-      []
     end
 
     def warnings(action)
