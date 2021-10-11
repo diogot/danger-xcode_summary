@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.7'
 
   # If you want to work on older builds of ruby
-  spec.add_development_dependency 'listen', '3.0.7'
+  spec.add_development_dependency 'listen', '~> 3.0'
 
   # This gives you the chance to run a REPL inside your test
   # via
