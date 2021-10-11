@@ -14,7 +14,7 @@ module Danger
       before do
         @dangerfile = testing_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
-        @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/pr_json.json'))
+        @xcode_summary.env.request_source.pr_json = JSON.parse(File.read('spec/fixtures/pr_json.json'))
         @xcode_summary.project_root = '/Users/marcelofabri/SwiftLint/'
       end
 
@@ -180,7 +180,7 @@ module Danger
       before do
         @dangerfile = testing_bitbucket_dangerfile
         @xcode_summary = @dangerfile.xcode_summary
-        @xcode_summary.env.request_source.pr_json = JSON.parse(IO.read('spec/fixtures/bitbucket_pr.json'), symbolize_names: true)
+        @xcode_summary.env.request_source.pr_json = JSON.parse(File.read('spec/fixtures/bitbucket_pr.json'), symbolize_names: true)
         @xcode_summary.project_root = '/Users/diogo/src/danger-xcode_summary'
       end
 
