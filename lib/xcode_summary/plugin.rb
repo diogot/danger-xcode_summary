@@ -55,7 +55,7 @@ module Danger
     # @return   [Boolean]
     attr_accessor :ignores_warnings
 
-    # Defines errors strict. If value is `false`, then errors will be treat as warnings.
+    # Defines errors strict. If value is `false`, then errors will be reporting as warnings.
     # Defaults to `true`
     attr_accessor :strict
 
