@@ -56,7 +56,7 @@ module Danger
     attr_accessor :ignores_warnings
 
     # Defines errors strict. If value is `false`, then errors will be treat as warnings.
-    # Defaults to `false`
+    # Defaults to `true`
     attr_accessor :strict
 
     # rubocop:disable Lint/DuplicateMethods
