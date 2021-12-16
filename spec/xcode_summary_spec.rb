@@ -188,6 +188,7 @@ module Danger
             result = @xcode_summary.warning_error_count('spec/fixtures/build_error.xcresult')
             expect(result).to eq '{"warnings":21,"errors":3}'
           end
+        end
       end
     end
 
