@@ -174,14 +174,14 @@ module Danger
         end
 
         context 'without strict' do
-          defore do
+          before do
             @xcode_summary.strict = false
           end
 
           it 'shows errors as warnings' do
             @xcode_summary.report('spec/fixtures/build_error.xcresult')
-            expect(@dangerfile.status_report[:warnings]).to_not eq 0
-            expect(@dangerfile.status_report[:errors].count).to eq []
+            expect(@dangerfile.status_report[:warnings].count).to_not eq 0
+            expect(@dangerfile.status_report[:errors]).to eq []
           end
 
           it 'report warning and error counts' do
