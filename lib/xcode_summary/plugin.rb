@@ -57,6 +57,8 @@ module Danger
 
     # Defines errors strict. If value is `false`, then errors will be reporting as warnings.
     # Defaults to `true`
+    # @param    [Boolean] value
+    # @return   [Boolean]
     attr_accessor :strict
 
     # rubocop:disable Lint/DuplicateMethods
@@ -138,7 +140,6 @@ module Danger
             warn(result.message, sticky: false)
           end
         end
-        # rubocop:disable Lint/UnreachableLoop
         errors(action).each do |result|
           if inline_mode && result.location
             if strict
@@ -154,7 +155,6 @@ module Danger
             end
           end
         end
-        # rubocop:enable Lint/UnreachableLoop
       end
     end
 
