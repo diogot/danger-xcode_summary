@@ -106,6 +106,13 @@ xcode_summary.inline_mode = true
 xcode_summary.report 'MyApp.xcresult'
 ```
 
+You can use `strict` to reporting errors as warnings thereby don't block merge PR.
+
+ ```ruby
+ # If value is `false`, then errors will be reporting as warnings
+ xcode_summary.strict = false
+ ```
+
 You can get warning and error number by calling `warning_error_count`. The return will be a JSON string contains warning and error count, e.g `{"warnings":1,"errors":3}`:
 
 ```ruby

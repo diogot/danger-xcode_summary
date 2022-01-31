@@ -55,6 +55,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :ignores_warnings
 
+    # Defines errors strict. If value is `false`, then errors will be reporting as warnings.
+    # Defaults to `true`
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :strict
+
     # rubocop:disable Lint/DuplicateMethods
     def project_root
       root = @project_root || Dir.pwd
@@ -76,6 +82,10 @@ module Danger
 
     def ignores_warnings
       @ignores_warnings || false
+    end
+
+    def strict
+      @strict.nil? ? true : @strict
     end
 
     # Pick a Dangerfile plugin for a chosen request_source and cache it
@@ -130,15 +140,21 @@ module Danger
             warn(result.message, sticky: false)
           end
         end
-        # rubocop:disable Lint/UnreachableLoop
         errors(action).each do |result|
           if inline_mode && result.location
-            fail(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+            if strict
+              fail(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+            else
+              warn(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+            end
           else
-            fail(result.message, sticky: false)
+            if strict
+              fail(result.message, sticky: false)
+            else
+              warn(result.message, sticky: false)
+            end
           end
         end
-        # rubocop:enable Lint/UnreachableLoop
       end
     end
 
