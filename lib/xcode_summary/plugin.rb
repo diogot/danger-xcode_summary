@@ -90,6 +90,8 @@ module Danger
 
     # Pick a Dangerfile plugin for a chosen request_source and cache it
     # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
+    #
+    # @return   [void]
     def plugin
       plugins = Plugin.all_plugins.select { |plugin| Dangerfile.essential_plugin_classes.include? plugin }
       @plugin ||= plugins.select { |p| p.method_defined? :html_link }.map { |p| p.new(@dangerfile) }.compact.first
