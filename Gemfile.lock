@@ -63,7 +63,7 @@ GEM
     faraday-retry (1.0.3)
     ffi (1.15.5)
     formatador (1.1.0)
-    git (1.10.2)
+    git (1.11.0)
       rchardet (~> 1.8)
     guard (2.18.0)
       formatador (>= 0.2.4)
