@@ -203,7 +203,9 @@ module Danger
       file_name = file_path.split('/').last
       fragment = document_location.url.split('#').last
       params = CGI.parse(fragment).transform_values(&:first)
-      line = params['StartingLineNumber'].to_i + 1 # StartingLineNumber is 0-based, but we need a 1-based value
+      line_number = params['StartingLineNumber']
+      # StartingLineNumber is 0-based, but we need a 1-based value
+      line = line_number.nil? || line_number.empty? ? 0 : line_number.to_i + 1
       Location.new(file_name, relative_path(file_path), line)
     end
 
