@@ -212,8 +212,8 @@ module Danger
       return [] if ignores_warnings
 
       warnings = [
-      action.action_result.issues.warning_summaries,
-      action.build_result.issues.warning_summaries
+        action.action_result.issues.warning_summaries,
+        action.build_result.issues.warning_summaries
       ].flatten.compact.map do |summary|
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_warning(result), result.location)
@@ -224,16 +224,16 @@ module Danger
 
     def errors(action)
       errors = [
-      action.action_result.issues.error_summaries,
-      action.build_result.issues.error_summaries
+        action.action_result.issues.error_summaries,
+        action.build_result.issues.error_summaries
       ].flatten.compact.map do |summary|
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_warning(result), result.location)
       end
 
       test_failures = [
-      action.action_result.issues.test_failure_summaries,
-      action.build_result.issues.test_failure_summaries
+        action.action_result.issues.test_failure_summaries,
+        action.build_result.issues.test_failure_summaries
       ].flatten.compact.map do |summary|
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
