@@ -56,6 +56,24 @@ A [Danger](http://danger.systems) plugin that shows all build errors, warnings a
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr>
+      <th width="50"></th>
+      <th width="100%">
+          1 Message
+      </th>
+     </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><g-emoji alias="book" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4d6.png">📖</g-emoji></td>
+      <td>TestTarget: Executed 5 tests, with 1 failure (0 unexpected) in 0.032 (0.065) seconds</td>
+    </tr>
+      </tr>
+  </tbody>
+</table>
+
 ## Installation
 
 Add this line to your Gemfile:
