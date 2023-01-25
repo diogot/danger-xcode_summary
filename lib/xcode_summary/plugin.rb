@@ -183,16 +183,20 @@ module Danger
         Result.new(format_warning(result), result.location)
       end
 
-      test_failures = [
-        action.action_result.issues.test_failure_summaries,
-        action.build_result.issues.test_failure_summaries
-      ].flatten.compact.map do |summary|
-        result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
-        Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
+      if action.action_result.status != 'succeeded' then
+        test_failures = [
+          action.action_result.issues.test_failure_summaries,
+          action.build_result.issues.test_failure_summaries
+        ].flatten.compact.map do |summary|
+          result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
+          Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
                    result.location)
+        end
+        results = (errors + test_failures).uniq.reject { |result| result.message.nil? }
+      else
+        results = (errors).uniq.reject { |result| result.message.nil? }
       end
 
-      results = (errors + test_failures).uniq.reject { |result| result.message.nil? }
       results.delete_if(&ignored_results)
     end
 
