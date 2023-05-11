@@ -170,7 +170,7 @@ module Danger
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_warning(result), result.location)
       end
-      warnings = warnings.sort.uniq.reject { |result| result.message.nil? }
+      warnings = warnings.uniq.reject { |result| result.message.nil? }.sort_by { |result| result.location.file_path + result.location.line.to_s + result.message }
       warnings.delete_if(&ignored_results)
     end
 
@@ -192,7 +192,11 @@ module Danger
                    result.location)
       end
 
-      results = (errors.sort + test_failures.sort).uniq.reject { |result| result.message.nil? }
+      errors = errors.reject { |result| result.message.nil? }.sort { |a, b|
+        a.location ? [a.location.file_path, a.location.line, a.message] <=> [b.location.file_path, b.location.line, b.message] : 0
+        }
+      test_failures = test_failures.reject { |result| result.message.nil? }
+      results = (errors + test_failures).uniq.reject { |result| result.message.nil? }
       results.delete_if(&ignored_results)
     end
 
