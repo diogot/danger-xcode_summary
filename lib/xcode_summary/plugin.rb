@@ -197,7 +197,7 @@ module Danger
     end
 
     def parse_location(document_location)
-      return nil if document_location.nil?
+      return nil if document_location&.url.nil?
 
       file_path = document_location.url.gsub('file://', '').split('#').first
       file_name = file_path.split('/').last
