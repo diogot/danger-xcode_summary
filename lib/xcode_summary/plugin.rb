@@ -245,6 +245,8 @@ module Danger
     end
 
     def format_test_failure(result, producing_target, test_case_name)
+      return escape_reason(result.message) if result.location.nil?
+      
       path = result.location.file_path
       path_link = format_path(path, result.location.line)
       suite_name = "#{producing_target}.#{test_case_name}"
