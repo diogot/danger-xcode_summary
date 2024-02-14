@@ -29,7 +29,7 @@ module Danger
             @xcode_summary.test_summary = true
             @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
             expect(@dangerfile.status_report[:messages]).to eq [
-            'SwiftLintFrameworkTests: Executed 540 tests, with 1 failures (0 expected) in 114.029 (27.922) seconds'
+              'SwiftLintFrameworkTests: Executed 540 tests, with 1 failures (0 expected) in 114.029 (27.922) seconds'
             ]
           end
         end
