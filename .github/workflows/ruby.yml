@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ruby-version: ['2.7', '3.2.2']
+        ruby-version: ['3.2.2']
 
     steps:
     - uses: actions/checkout@v3
