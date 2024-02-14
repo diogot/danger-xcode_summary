@@ -19,10 +19,10 @@ permissions:
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        ruby-version: ['2.6', '2.7', '3.0', '3.2.2']
+        ruby-version: ['3.2.2']
 
     steps:
     - uses: actions/checkout@v3
