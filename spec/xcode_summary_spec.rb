@@ -23,6 +23,26 @@ module Danger
         expect(@dangerfile.status_report[:errors]).to eq ['summary file not found']
       end
 
+      describe 'summary' do
+        context 'enabled' do
+          it 'formats summary messages' do
+            @xcode_summary.test_summary = true
+            @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+            expect(@dangerfile.status_report[:messages]).to eq [
+            'SwiftLintFrameworkTests: Executed 540 tests, with 1 failures (0 expected) in 114.029 (27.922) seconds'
+            ]
+          end
+        end
+
+        context 'disabled' do
+          it 'shows no summary messages' do
+            @xcode_summary.test_summary = false
+            @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+            expect(@dangerfile.status_report[:messages]).to eq []
+          end
+        end
+      end
+
       context 'reporting' do
         it 'formats compile warnings' do
           @xcode_summary.report('spec/fixtures/swiftlint.xcresult')

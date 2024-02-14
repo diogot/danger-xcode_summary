@@ -43,6 +43,18 @@ module Danger
     # @return   [Block]
     attr_accessor :ignored_results
 
+    # Defines if the test summary will be sticky or not.
+    # Defaults to `false`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :sticky_summary
+
+    # Defines if the build summary is shown or not.
+    # Defaults to `true`.
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :test_summary
+
     # Defines if using inline comment or not.
     # Defaults to `false`.
     # @param    [Boolean] value
@@ -74,6 +86,14 @@ module Danger
 
     def ignored_results(&block)
       @ignored_results ||= block
+    end
+
+    def sticky_summary
+      @sticky_summary || false
+    end
+
+    def test_summary
+      @test_summary.nil? ? true : @test_summary
     end
 
     def inline_mode
@@ -134,6 +154,7 @@ module Danger
     private
 
     def format_summary(xcode_summary)
+      messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
       xcode_summary.actions_invocation_record.actions.each do |action|
         warnings(action).each do |result|
           if inline_mode && result.location
@@ -157,6 +178,33 @@ module Danger
             end
           end
         end
+      end
+    end
+
+    def messages(xcode_summary)
+      if test_summary
+        test_messages = xcode_summary.action_test_plan_summaries.map do |test_plan_summaries|
+          test_plan_summaries.summaries.map do |summary|
+            summary.testable_summaries.map do |test_summary|
+              test_summary.tests.filter_map do |action_test_object|
+                if action_test_object.instance_of? XCResult::ActionTestSummaryGroup
+                  subtests = action_test_object.all_subtests
+                  subtests_duration = subtests.map(&:duration).sum
+                  test_text_infix = subtests.count == 1 ? 'test' : 'tests'
+                  failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
+                  expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
+
+                  "#{test_summary.target_name}: Executed #{subtests.count} #{test_text_infix}, " \
+                  "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
+                  "#{subtests_duration.round(3)} (#{action_test_object.duration.round(3)}) seconds"
+                end
+              end
+            end
+          end
+        end
+        test_messages.flatten.uniq.compact.map(&:strip)
+      else
+        []
       end
     end
 
