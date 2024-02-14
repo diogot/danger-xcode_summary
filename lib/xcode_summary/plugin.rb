@@ -21,6 +21,7 @@ module Danger
   class DangerXcodeSummary < Plugin
     Location = Struct.new(:file_name, :file_path, :line)
     Result = Struct.new(:message, :location)
+    Warning = Struct.new(:message, :sticky, :location)
 
     # The project root, which will be used to make the paths relative.
     # Defaults to `pwd`.
@@ -39,7 +40,7 @@ module Danger
     # A block that filters specific results.
     # An example would be `lambda { |result| result.message.start_with?('ld') }` to ignore results for ld_warnings.
     #
-    # @param    [Block value
+    # @param    [Block] value
     # @return   [Block]
     attr_accessor :ignored_results
 
@@ -54,6 +55,14 @@ module Danger
     # @param    [Boolean] value
     # @return   [Boolean]
     attr_accessor :test_summary
+
+    # A block that sorts the warning results.
+    # An example would be `lambda { |warning| warning.message.include?("deprecated") ? 1 : 0 }` to sort results for
+    # deprecated warnings.
+    #
+    # @param    [Block] value
+    # @return   [Block]
+    attr_accessor :sort_warnings_by
 
     # Defines if using inline comment or not.
     # Defaults to `false`.
@@ -82,6 +91,10 @@ module Danger
 
     def ignored_files
       [@ignored_files].flatten.compact
+    end
+
+    def sort_warnings_by(&block)
+      @sort_warnings_by ||= block
     end
 
     def ignored_results(&block)
@@ -155,13 +168,16 @@ module Danger
 
     def format_summary(xcode_summary)
       messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
+      all_warnings = []
       xcode_summary.actions_invocation_record.actions.each do |action|
         warnings(action).each do |result|
+          warning_object = nil
           if inline_mode && result.location
-            warn(result.message, sticky: false, file: result.location.file_path, line: result.location.line)
+            warning_object = Warning.new(result.message, false, result.location)
           else
-            warn(result.message, sticky: false)
+            warning_object = Warning.new(result.message, false, nil)
           end
+          all_warnings << warning_object
         end
         errors(action).each do |result|
           if inline_mode && result.location
@@ -177,6 +193,18 @@ module Danger
               warn(result.message, sticky: false)
             end
           end
+        end
+      end
+      sort_and_log_warnings(all_warnings)
+    end
+
+    def sort_and_log_warnings(all_warnings)
+      all_warnings = all_warnings.sort_by(&sort_warnings_by)
+      all_warnings.each do |warning|
+        if inline_mode && warning.location
+          warn(warning.message, sticky: warning.sticky, file: warning.location.file_path, line: warning.location.line)
+        else
+          warn(warning.message, sticky: warning.sticky)
         end
       end
     end
