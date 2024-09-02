@@ -3,7 +3,7 @@ PATH
   specs:
     danger-xcode_summary (1.3.0)
       danger-plugin-api (~> 1.0)
-      xcresult (~> 0.2)
+      xcresult (~> 0.2.2)
 
 GEM
   remote: https://rubygems.org/
@@ -139,7 +139,7 @@ GEM
     thor (1.3.0)
     unicode-display_width (2.5.0)
     uri (0.13.0)
-    xcresult (0.2.1)
+    xcresult (0.2.2)
     yard (0.9.36)
 
 PLATFORMS
