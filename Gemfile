@@ -8,3 +8,4 @@ gemspec
 gem 'danger'
 gem 'rubocop'
 gem 'yard'
+gem 'rexml', '3.3.6'
