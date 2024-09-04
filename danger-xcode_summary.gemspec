@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.4.0"
 
-  spec.add_dependency 'xcresult', '~> 0.2'
+  spec.add_dependency 'xcresult', '~> 0.2.2'
   spec.add_runtime_dependency 'danger-plugin-api', '~> 1.0'
 
   # General ruby development
