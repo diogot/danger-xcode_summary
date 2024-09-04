@@ -30,7 +30,6 @@ end
 # it comes with an extra function `.string` which will
 # strip all ANSI colours from the string.
 
-# rubocop:disable Lint/NestedMethodDefinition
 def testing_ui
   @output = StringIO.new
   def @output.winsize
@@ -43,7 +42,6 @@ def testing_ui
   end
   cork
 end
-# rubocop:enable Lint/NestedMethodDefinition
 
 # Example environment (ENV) that would come from
 # running a PR on TravisCI
