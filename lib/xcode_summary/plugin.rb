@@ -82,6 +82,12 @@ module Danger
     # @return   [Boolean]
     attr_accessor :strict
 
+    # Defines if parallelized test runs from the same target should be collapsed into one message.
+    # Defaults to `false`
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :collapse_parallelized_tests
+
     # rubocop:disable Lint/DuplicateMethods
     def project_root
       root = @project_root || Dir.pwd
@@ -119,6 +125,10 @@ module Danger
 
     def strict
       @strict.nil? || @strict
+    end
+
+    def collapse_parallelized_tests
+      @collapse_parallelized_tests || false
     end
 
     # Pick a Dangerfile plugin for a chosen request_source and cache it
@@ -211,26 +221,63 @@ module Danger
 
     def messages(xcode_summary)
       if test_summary
-        test_messages = xcode_summary.action_test_plan_summaries.map do |test_plan_summaries|
+        test_runs = xcode_summary.action_test_plan_summaries.map do |test_plan_summaries|
           test_plan_summaries.summaries.map do |summary|
             summary.testable_summaries.map do |test_summary|
               test_summary.tests.filter_map do |action_test_object|
                 if action_test_object.instance_of? XCResult::ActionTestSummaryGroup
                   subtests = action_test_object.all_subtests
                   subtests_duration = subtests.map(&:duration).sum
-                  test_text_infix = subtests.count == 1 ? 'test' : 'tests'
+                  
                   failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
                   expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
 
-                  "#{test_summary.target_name}: Executed #{subtests.count} #{test_text_infix}, " \
-                    "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
-                    "#{subtests_duration.round(3)} (#{action_test_object.duration.round(3)}) seconds"
+                  {
+                    target_name: test_summary.target_name,
+                    test_count: subtests.count,
+                    failed_tests_count: failed_tests_count,
+                    expected_failed_tests_count: expected_failed_tests_count,
+                    tests_duration: subtests_duration,
+                    action_duration: action_test_object.duration
+                  }
                 end
               end
             end
           end
         end
-        test_messages.flatten.uniq.compact.map(&:strip)
+
+        flattened_test_runs = test_runs.flatten.uniq.compact
+
+        if collapse_parallelized_tests
+          test_runs_by_target = flattened_test_runs.group_by { |test_run| test_run[:target_name] }
+          flattened_test_runs = test_runs_by_target.map do |target_name, test_runs|
+            test_runs.reduce do |acc, test_run|
+              acc.merge(
+                test_count: acc[:test_count] + test_run[:test_count],
+                failed_tests_count: acc[:failed_tests_count] + test_run[:failed_tests_count],
+                expected_failed_tests_count: acc[:expected_failed_tests_count] + test_run[:expected_failed_tests_count],
+                tests_duration: acc[:tests_duration] + test_run[:tests_duration],
+                action_duration: acc[:action_duration] + test_run[:action_duration]
+              )
+            end
+          end
+        end
+
+        test_messages = flattened_test_runs.map do |test_run|
+          target_name = test_run[:target_name]
+          test_count = test_run[:test_count]
+          failed_tests_count = test_run[:failed_tests_count]
+          expected_failed_tests_count = test_run[:expected_failed_tests_count]
+          subtests_duration = test_run[:tests_duration]
+          action_duration = test_run[:action_duration]
+          test_text_infix = test_count == 1 ? 'test' : 'tests'
+
+          "#{target_name}: Executed #{test_count} #{test_text_infix}, " \
+            "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
+            "#{subtests_duration.round(3)} (#{action_duration.round(3)}) seconds"
+        end
+        
+        test_messages.map(&:strip)
       else
         []
       end
