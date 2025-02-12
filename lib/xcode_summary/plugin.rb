@@ -221,7 +221,8 @@ module Danger
                   test_text_infix = subtests.count == 1 ? 'test' : 'tests'
                   failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
                   expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
-
+                  
+                  next if failed_tests_count.zero?
                   "#{test_summary.target_name}: Executed #{subtests.count} #{test_text_infix}, " \
                     "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
                     "#{subtests_duration.round(3)} (#{action_test_object.duration.round(3)}) seconds"
