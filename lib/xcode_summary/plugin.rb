@@ -228,7 +228,7 @@ module Danger
                 if action_test_object.instance_of? XCResult::ActionTestSummaryGroup
                   subtests = action_test_object.all_subtests
                   subtests_duration = subtests.map(&:duration).sum
-                  
+
                   failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
                   expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
 
@@ -276,7 +276,7 @@ module Danger
             "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
             "#{subtests_duration.round(3)} (#{action_duration.round(3)}) seconds"
         end
-        
+
         test_messages.map(&:strip)
       else
         []
