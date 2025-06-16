@@ -106,7 +106,7 @@ module Danger
     end
 
     def test_summary
-      @test_summary.nil? ? true : @test_summary
+      @test_summary.nil? || @test_summary
     end
 
     def inline_mode
@@ -118,7 +118,7 @@ module Danger
     end
 
     def strict
-      @strict.nil? ? true : @strict
+      @strict.nil? || @strict
     end
 
     # Pick a Dangerfile plugin for a chosen request_source and cache it
