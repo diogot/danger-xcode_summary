@@ -257,6 +257,60 @@ module Danger
             expect(result).to eq '{"warnings":21,"errors":3}'
           end
         end
+
+        context 'with collapse_parallelized_tests' do
+          context 'enabled' do
+            before do
+              @xcode_summary.collapse_parallelized_tests = true
+            end
+
+            it 'collapses test runs from the same target' do
+              # Allow for message receiving testing
+              allow(@xcode_summary).to receive(:message).and_call_original
+              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+
+              # Ensure that the plugin received a call to message with the combined test results
+              expect(@xcode_summary).to have_received(:message).with(/SwiftLintFrameworkTests: Executed .* tests/m, sticky: false)
+
+              # The standard test case should only show one message per target, even with parallelized tests
+              expect(@dangerfile.status_report[:messages].length).to eq(1)
+            end
+          end
+
+          context 'disabled' do
+            before do
+              @xcode_summary.collapse_parallelized_tests = false
+            end
+
+            it 'shows individual test runs for each target' do
+              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+
+              # We know from the existing tests that the standard behavior should match
+              # the test in the "summary" context, with one test run per message
+              expect(@dangerfile.status_report[:messages]).to eq [
+                'SwiftLintFrameworkTests: Executed 540 tests, with 1 failures (0 expected) in 114.029 (27.922) seconds'
+              ]
+            end
+          end
+
+          context 'with default value' do
+            it 'defaults to disabled behavior' do
+              # Don't set collapse_parallelized_tests to test the default
+              # Reset any test_summary setting to ensure clean state
+              @xcode_summary.test_summary = true
+
+              @xcode_summary.report('spec/fixtures/swiftlint.xcresult')
+
+              # Default should match the disabled behavior
+              expect(@dangerfile.status_report[:messages]).to eq [
+                'SwiftLintFrameworkTests: Executed 540 tests, with 1 failures (0 expected) in 114.029 (27.922) seconds'
+              ]
+
+              # Verify the default value is false
+              expect(@xcode_summary.collapse_parallelized_tests).to eq(false)
+            end
+          end
+        end
       end
     end
 

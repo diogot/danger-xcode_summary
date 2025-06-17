@@ -107,6 +107,10 @@ xcode_summary.ignored_results { |result|
 }
 
 xcode_summary.report 'MyApp.xcresult'
+
+# When `true`, collapses parallelized test runs of the same target into one line.
+# Defaults to `false`.
+xcode_summary.collapse_parallelized_tests = true
 ```
 
 You can use `ignores_warnings` to supress warnings and shows only errors.
