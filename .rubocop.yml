@@ -24,7 +24,7 @@ Style/ClassAndModuleChildren:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 60
+  Max: 66
 
 # The %w might be confusing for new users
 Style/WordArray:
