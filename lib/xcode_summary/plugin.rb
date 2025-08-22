@@ -88,6 +88,13 @@ module Danger
     # @return   [Boolean]
     attr_accessor :collapse_parallelized_tests
 
+    # Defines if retried unit tests should be handled intelligently.
+    # When enabled, if a test fails but succeeds on retry, the failure will be ignored.
+    # Defaults to `false`
+    # @param    [Boolean] value
+    # @return   [Boolean]
+    attr_accessor :ignore_retried_tests
+
     # rubocop:disable Lint/DuplicateMethods
     def project_root
       root = @project_root || Dir.pwd
@@ -131,6 +138,10 @@ module Danger
       @collapse_parallelized_tests || false
     end
 
+    def ignore_retried_tests
+      @ignore_retried_tests || false
+    end
+
     # Pick a Dangerfile plugin for a chosen request_source and cache it
     # based on https://github.com/danger/danger/blob/master/lib/danger/plugin_support/plugin.rb#L31
     #
@@ -148,6 +159,9 @@ module Danger
     def report(file_path)
       if File.exist?(file_path)
         xcode_summary = XCResult::Parser.new(path: file_path)
+        if ignore_retried_tests
+          @successfully_retried_test_identifiers = extract_all_successfully_retried_test_identifiers(xcode_summary)
+        end
         format_summary(xcode_summary)
       else
         fail 'summary file not found'
@@ -161,6 +175,9 @@ module Danger
     def warning_error_count(file_path)
       if File.exist?(file_path)
         xcode_summary = XCResult::Parser.new(path: file_path)
+        if ignore_retried_tests
+          @successfully_retried_test_identifiers = extract_all_successfully_retried_test_identifiers(xcode_summary)
+        end
         warning_count = 0
         error_count = 0
         xcode_summary.actions_invocation_record.actions.each do |action|
@@ -228,6 +245,17 @@ module Danger
                 if action_test_object.instance_of? XCResult::ActionTestSummaryGroup
                   subtests = action_test_object.all_subtests
                   subtests_duration = subtests.map(&:duration).sum
+
+                  if ignore_retried_tests
+                    subtests_without_retry_attempt = subtests.group_by(&:identifier).values.map do |group|
+                      if group.length > 1 && group.any? { |subtest| subtest.test_status == 'Success' }
+                        group.reject { |subtest| subtest.test_status == 'Failure' }
+                      else
+                        group
+                      end
+                    end
+                    subtests = subtests_without_retry_attempt.flatten
+                  end
 
                   failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
                   expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
@@ -306,17 +334,54 @@ module Danger
         Result.new(format_warning(result), result.location)
       end
 
+      successfully_retried_test_identifiers = @successfully_retried_test_identifiers || []
       test_failures = [
         action.action_result.issues.test_failure_summaries,
         action.build_result.issues.test_failure_summaries
       ].flatten.compact.map do |summary|
+        if ignore_retried_tests && successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
+          next
+        end
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
                    result.location)
       end
 
-      results = (errors + test_failures).uniq.reject { |result| result.message.nil? }
+      results = (errors + test_failures).compact.uniq.reject { |result| result.message.nil? }
       results.delete_if(&ignored_results)
+    end
+
+    def extract_all_successfully_retried_test_identifiers(xcode_summary)
+      successfully_retried_test_identifiers = []
+      xcode_summary.action_test_plan_summaries.each do |test_plan_summaries|
+        test_plan_summaries.summaries.each do |summary|
+          summary.testable_summaries.each do |testable_summary|
+            testable_summary.tests.each do |test|
+              if test.instance_of? XCResult::ActionTestSummaryGroup
+                test.all_subtests.group_by(&:identifier).each do |identifier, subtests|
+                  contain_success = subtests.any? { |subtest| subtest.test_status == 'Success' }
+                  if subtests.length > 1 && contain_success
+                    successfully_retried_test_identifiers << identifier
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+      successfully_retried_test_identifiers
+    end
+
+    def sanitized_test_case_name(test_case_name)
+      # Clean test_case_name to match identifier format
+      # Sanitize for Swift by replacing "." for "/"
+      # Sanitize for Objective-C by removing "-", "[", "]", and replacing " " for ?/
+      sanitized_test_case_name = test_case_name
+                                  .tr('.', '/')
+                                  .tr('-', '')
+                                  .tr('[', '')
+                                  .tr(']', '')
+                                  .tr(' ', '/')
     end
 
     def parse_location(document_location)

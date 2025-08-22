@@ -314,6 +314,66 @@ module Danger
       end
     end
 
+    # Test retried tests functionality
+    describe 'with retried tests' do
+      before do
+        @dangerfile = testing_dangerfile
+        @xcode_summary = @dangerfile.xcode_summary
+        @xcode_summary.env.request_source.pr_json = JSON.parse(File.read('spec/fixtures/pr_json.json'))
+        @xcode_summary.project_root = '/Users/marcelofabri/SwiftLint/'
+      end
+
+      context 'with ignore_retried_tests enabled' do
+        before do
+          @xcode_summary.ignore_retried_tests = true
+        end
+
+        it 'ignores test failures that succeeded on retry' do
+          @xcode_summary.report('spec/fixtures/retried_tests.xcresult')
+          # The retried test should not show up as an error since it ultimately succeeded
+          expect(@dangerfile.status_report[:errors]).to eq []
+        end
+
+        it 'shows test summary with retry information' do
+          @xcode_summary.test_summary = true
+          @xcode_summary.report('spec/fixtures/retried_tests.xcresult')
+          # The test summary should still show execution information
+          expect(@dangerfile.status_report[:messages].length).to eq 1
+          expect(@dangerfile.status_report[:messages].first).to match("retried-testTests: Executed 2 tests, with 0 failures (0 expected) in 0.158 (0.158) seconds")
+        end
+
+        it 'shows no error count' do
+            result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
+            expect(result).to eq '{"warnings":0,"errors":0}'
+        end
+
+        it 'defaults to false' do
+          # Create a fresh instance to test default value
+          fresh_dangerfile = testing_dangerfile
+          fresh_xcode_summary = fresh_dangerfile.xcode_summary
+          expect(fresh_xcode_summary.ignore_retried_tests).to eq false
+        end
+      end
+
+      context 'with ignore_retried_tests disabled' do
+        before do
+          @xcode_summary.ignore_retried_tests = false
+        end
+
+        it 'still reports test failures even if they succeeded on retry' do
+          @xcode_summary.report('spec/fixtures/retried_tests.xcresult')
+          # With retry filtering disabled, failed tests should still be reported
+          expect(@dangerfile.status_report[:errors].length).to eq 1
+        end
+
+        it 'count retry as error' do
+            result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
+            expect(result).to eq '{"warnings":0,"errors":1}'
+        end
+
+      end
+    end
+
     # Second environment with different request_source
     describe 'with bitbucket request_source' do
       before do
