@@ -128,6 +128,15 @@ xcode_summary.inline_mode = true
 xcode_summary.report 'MyApp.xcresult'
 ```
 
+You can use `ignore_retried_tests` to intelligently handle retried unit tests.
+When enabled, if a test fails but succeeds on retry, the failure will be ignored and not reported as an error.
+
+```ruby
+# Ignore test failures that succeeded on retry
+xcode_summary.ignore_retried_tests = true
+xcode_summary.report 'MyApp.xcresult'
+```
+
 You can use `strict` to reporting errors as warnings thereby don't block merge PR.
 
  ```ruby
