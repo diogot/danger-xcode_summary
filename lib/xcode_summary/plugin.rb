@@ -193,6 +193,38 @@ module Danger
 
     private
 
+    def filter_retried_tests(subtests)
+      return subtests unless ignore_retried_tests
+
+      subtests_without_retry_attempt = subtests.group_by(&:identifier).values.map do |group|
+        if group.length > 1 && group.any? { |subtest| subtest.test_status == 'Success' }
+          group.reject { |subtest| subtest.test_status == 'Failure' }
+        else
+          group
+        end
+      end
+      subtests_without_retry_attempt.flatten
+    end
+
+    def create_test_run_data(action_test_object, test_summary)
+      subtests = action_test_object.all_subtests
+      subtests_duration = subtests.map(&:duration).sum
+
+      subtests = filter_retried_tests(subtests)
+
+      failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
+      expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
+
+      {
+        target_name: test_summary.target_name,
+        test_count: subtests.count,
+        failed_tests_count: failed_tests_count,
+        expected_failed_tests_count: expected_failed_tests_count,
+        tests_duration: subtests_duration,
+        action_duration: action_test_object.duration
+      }
+    end
+
     def format_summary(xcode_summary)
       messages(xcode_summary).each { |s| message(s, sticky: sticky_summary) }
       all_warnings = []
@@ -243,31 +275,7 @@ module Danger
             summary.testable_summaries.map do |test_summary|
               test_summary.tests.filter_map do |action_test_object|
                 if action_test_object.instance_of? XCResult::ActionTestSummaryGroup
-                  subtests = action_test_object.all_subtests
-                  subtests_duration = subtests.map(&:duration).sum
-
-                  if ignore_retried_tests
-                    subtests_without_retry_attempt = subtests.group_by(&:identifier).values.map do |group|
-                      if group.length > 1 && group.any? { |subtest| subtest.test_status == 'Success' }
-                        group.reject { |subtest| subtest.test_status == 'Failure' }
-                      else
-                        group
-                      end
-                    end
-                    subtests = subtests_without_retry_attempt.flatten
-                  end
-
-                  failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
-                  expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
-
-                  {
-                    target_name: test_summary.target_name,
-                    test_count: subtests.count,
-                    failed_tests_count: failed_tests_count,
-                    expected_failed_tests_count: expected_failed_tests_count,
-                    tests_duration: subtests_duration,
-                    action_duration: action_test_object.duration
-                  }
+                  create_test_run_data(action_test_object, test_summary)
                 end
               end
             end
@@ -339,7 +347,8 @@ module Danger
         action.action_result.issues.test_failure_summaries,
         action.build_result.issues.test_failure_summaries
       ].flatten.compact.map do |summary|
-        if ignore_retried_tests && successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
+        if ignore_retried_tests &&
+           successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
           next
         end
 
