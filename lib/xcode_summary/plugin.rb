@@ -347,7 +347,8 @@ module Danger
         action.action_result.issues.test_failure_summaries,
         action.build_result.issues.test_failure_summaries
       ].flatten.compact.map do |summary|
-        if ignore_retried_tests && successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
+        if ignore_retried_tests &&
+           successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
           next
         end
 
