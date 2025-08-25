@@ -339,12 +339,12 @@ module Danger
           @xcode_summary.report('spec/fixtures/retried_tests.xcresult')
           # The test summary should still show execution information
           expect(@dangerfile.status_report[:messages].length).to eq 1
-          expect(@dangerfile.status_report[:messages].first).to match("retried-testTests: Executed 2 tests, with 0 failures (0 expected) in 0.158 (0.158) seconds")
+          expect(@dangerfile.status_report[:messages].first).to match('retried-testTests: Executed 2 tests, with 0 failures (0 expected) in 0.158 (0.158) seconds')
         end
 
         it 'shows no error count' do
-            result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
-            expect(result).to eq '{"warnings":0,"errors":0}'
+          result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
+          expect(result).to eq '{"warnings":0,"errors":0}'
         end
 
         it 'defaults to false' do
@@ -367,10 +367,9 @@ module Danger
         end
 
         it 'count retry as error' do
-            result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
-            expect(result).to eq '{"warnings":0,"errors":1}'
+          result = @xcode_summary.warning_error_count('spec/fixtures/retried_tests.xcresult')
+          expect(result).to eq '{"warnings":0,"errors":1}'
         end
-
       end
     end
 

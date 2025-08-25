@@ -342,6 +342,7 @@ module Danger
         if ignore_retried_tests && successfully_retried_test_identifiers.include?(sanitized_test_case_name(summary.test_case_name))
           next
         end
+
         result = Result.new(summary.message, parse_location(summary.document_location_in_creating_workspace))
         Result.new(format_test_failure(result, summary.producing_target, summary.test_case_name),
                    result.location)
@@ -357,12 +358,12 @@ module Danger
         test_plan_summaries.summaries.each do |summary|
           summary.testable_summaries.each do |testable_summary|
             testable_summary.tests.each do |test|
-              if test.instance_of? XCResult::ActionTestSummaryGroup
-                test.all_subtests.group_by(&:identifier).each do |identifier, subtests|
-                  contain_success = subtests.any? { |subtest| subtest.test_status == 'Success' }
-                  if subtests.length > 1 && contain_success
-                    successfully_retried_test_identifiers << identifier
-                  end
+              next unless test.instance_of? XCResult::ActionTestSummaryGroup
+
+              test.all_subtests.group_by(&:identifier).each do |identifier, subtests|
+                contain_success = subtests.any? { |subtest| subtest.test_status == 'Success' }
+                if subtests.length > 1 && contain_success
+                  successfully_retried_test_identifiers << identifier
                 end
               end
             end
@@ -376,12 +377,12 @@ module Danger
       # Clean test_case_name to match identifier format
       # Sanitize for Swift by replacing "." for "/"
       # Sanitize for Objective-C by removing "-", "[", "]", and replacing " " for ?/
-      sanitized_test_case_name = test_case_name
-                                  .tr('.', '/')
-                                  .tr('-', '')
-                                  .tr('[', '')
-                                  .tr(']', '')
-                                  .tr(' ', '/')
+      test_case_name
+        .tr('.', '/')
+        .tr('-', '')
+        .tr('[', '')
+        .tr(']', '')
+        .tr(' ', '/')
     end
 
     def parse_location(document_location)
