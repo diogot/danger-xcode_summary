@@ -24,21 +24,21 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.4.0'
 
   spec.add_dependency 'danger-plugin-api', '~> 1.0'
-  spec.add_dependency 'xcresult', '~> 0.2.2'
+  spec.add_dependency 'xcresult'
 
   # General ruby development
   spec.add_development_dependency 'bundler', '>= 2.2.10'
-  spec.add_development_dependency 'rake', '~> 13.0'
+  spec.add_development_dependency 'rake'
 
   #  Testing support
-  spec.add_development_dependency 'rspec', '~> 3.4'
+  spec.add_development_dependency 'rspec'
 
   # Makes testing easy via `bundle exec guard`
-  spec.add_development_dependency 'guard', '~> 2.14'
-  spec.add_development_dependency 'guard-rspec', '~> 4.7'
+  spec.add_development_dependency 'guard'
+  spec.add_development_dependency 'guard-rspec'
 
   # If you want to work on older builds of ruby
-  spec.add_development_dependency 'listen', '~> 3.0'
+  spec.add_development_dependency 'listen'
 
   # This gives you the chance to run a REPL inside your test
   # via

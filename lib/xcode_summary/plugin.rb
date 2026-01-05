@@ -400,7 +400,7 @@ module Danger
       file_path = document_location.url.gsub('file://', '').split('#').first
       file_name = file_path.split('/').last
       fragment = document_location.url.split('#').last
-      params = CGI.parse(fragment).transform_values(&:first)
+      params = URI.decode_www_form(fragment).to_h
       line_number = params['StartingLineNumber']
       # StartingLineNumber is 0-based, but we need a 1-based value
       line = line_number.nil? || line_number.empty? ? 0 : line_number.to_i + 1
