@@ -211,15 +211,26 @@ module Danger
       subtests_duration = subtests.map(&:duration).sum
 
       subtests = filter_retried_tests(subtests)
-
-      failed_tests_count = subtests.reject { |test| test.test_status == 'Success' }.count
-      expected_failed_tests_count = subtests.select { |test| test.test_status == 'Expected Failure' }.count
+      test_results = subtests.each_with_object({ failed_tests_count: 0,
+                                                 expected_failed_tests_count: 0,
+                                                 skipped_tests_count: 0 }) do |test, acc|
+        case test.test_status
+        when 'Failure'
+          acc[:failed_tests_count] += 1
+        when 'Expected Failure'
+          acc[:expected_failed_tests_count] += 1
+          acc[:failed_tests_count] += 1
+        when 'Skipped'
+          acc[:skipped_tests_count] += 1
+        end
+      end
 
       {
         target_name: test_summary.target_name,
         test_count: subtests.count,
-        failed_tests_count: failed_tests_count,
-        expected_failed_tests_count: expected_failed_tests_count,
+        failed_tests_count: test_results[:failed_tests_count],
+        expected_failed_tests_count: test_results[:expected_failed_tests_count],
+        skipped_tests_count: test_results[:skipped_tests_count],
         tests_duration: subtests_duration,
         action_duration: action_test_object.duration
       }
@@ -293,6 +304,7 @@ module Danger
                 failed_tests_count: acc[:failed_tests_count] + test_run[:failed_tests_count],
                 expected_failed_tests_count: acc[:expected_failed_tests_count] + test_run[:expected_failed_tests_count],
                 tests_duration: acc[:tests_duration] + test_run[:tests_duration],
+                skipped_tests_count: acc[:skipped_tests_count] + test_run[:skipped_tests_count],
                 action_duration: acc[:action_duration] + test_run[:action_duration]
               )
             end
@@ -309,6 +321,7 @@ module Danger
           test_text_infix = test_count == 1 ? 'test' : 'tests'
 
           "#{target_name}: Executed #{test_count} #{test_text_infix}, " \
+            "#{test_run[:skipped_tests_count]} skipped , " \
             "with #{failed_tests_count} failures (#{expected_failed_tests_count} expected) in " \
             "#{subtests_duration.round(3)} (#{action_duration.round(3)}) seconds"
         end
