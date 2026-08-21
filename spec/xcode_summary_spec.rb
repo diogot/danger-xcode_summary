@@ -213,7 +213,7 @@ module Danger
         context 'with sort_warnings_by' do
           before do
             @xcode_summary.sort_warnings_by do |warning|
-              warning.message.include?('TODOs') ? 0 : 1
+              "#{warning.message.include?('TODOs') ? 0 : 1}_#{warning&.location&.file_path}/#{warning&.location&.file_name}:#{warning&.location&.line}/"
             end
           end
           it 'sorts compile warnings' do
